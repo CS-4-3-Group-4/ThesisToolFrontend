@@ -13,7 +13,7 @@ function App() {
   });
 
   return (
-    <div className="bg-background flex min-h-svh flex-col items-center justify-center p-4">
+    <div className="bg-background flex min-h-svh flex-col items-center justify-center p-4 font-sans">
       <Button>Click me</Button>
       <ThemeToggle />
 
