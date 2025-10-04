@@ -1,26 +1,13 @@
 import { Badge } from "@/components/ui/badge";
-import type { AlgorithmMode, RunMode } from "@/types";
 import { Zap, Database, Clock } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 
 interface SimulationHeaderProps {
   apiStatus: "connected" | "disconnected" | "checking";
-  isRunning: boolean;
-  currentIteration: number;
-  totalGenerations: number;
-  algorithmMode: AlgorithmMode;
-  runMode: RunMode;
 }
 
 // Main component
-export function SimulationHeader({
-  apiStatus,
-  isRunning,
-  currentIteration,
-  totalGenerations,
-  algorithmMode,
-  runMode,
-}: SimulationHeaderProps) {
+export function SimulationHeader({ apiStatus }: SimulationHeaderProps) {
   return (
     <div className="from-background via-background to-muted/20 relative overflow-hidden rounded-xl border bg-gradient-to-br p-8">
       <div className="from-primary/5 absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l to-transparent" />
@@ -35,14 +22,6 @@ export function SimulationHeader({
         <div className="flex items-center gap-3">
           <ThemeToggle />
         </div>
-
-        <StatusCard
-          isRunning={isRunning}
-          currentIteration={currentIteration}
-          totalGenerations={totalGenerations}
-          algorithmMode={algorithmMode}
-          runMode={runMode}
-        />
       </div>
     </div>
   );
@@ -103,54 +82,6 @@ function HeaderBadges({
         />
         {apiStatus === "connected" ? "API Connected" : "API Disconnected"}
       </Badge>
-    </div>
-  );
-}
-
-// Sub-component: Status Card
-function StatusCard({
-  isRunning,
-  currentIteration,
-  totalGenerations,
-  algorithmMode,
-  runMode,
-}: Pick<
-  SimulationHeaderProps,
-  | "isRunning"
-  | "currentIteration"
-  | "totalGenerations"
-  | "algorithmMode"
-  | "runMode"
->) {
-  return (
-    <div className="hidden lg:block">
-      <div className="bg-card rounded-lg border p-4 shadow-sm">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-8">
-            <span className="text-muted-foreground text-xs">Status</span>
-            <Badge
-              variant={isRunning ? "default" : "secondary"}
-              className="text-xs"
-            >
-              {isRunning ? "Running" : "Idle"}
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between gap-8">
-            <span className="text-muted-foreground text-xs">Progress</span>
-            <span className="font-mono text-xs font-medium">
-              {currentIteration > 0
-                ? `${((currentIteration / totalGenerations) * 100).toFixed(0)}%`
-                : "0%"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-8">
-            <span className="text-muted-foreground text-xs">Mode</span>
-            <span className="text-xs font-medium capitalize">
-              {runMode} ({algorithmMode})
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

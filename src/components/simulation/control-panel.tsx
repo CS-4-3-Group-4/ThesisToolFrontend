@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, RotateCcw } from "lucide-react";
 import type { AlgorithmMode, RunMode } from "@/types";
+import { Progress } from "../ui/progress";
 
 interface ControlPanelProps {
   isRunning: boolean;
+  progress: number | null;
   currentIteration: number;
   totalGenerations: number;
   currentRun: number;
@@ -29,6 +31,7 @@ interface ControlPanelProps {
 
 export function ControlPanel({
   isRunning,
+  progress,
   currentIteration,
   totalGenerations,
   currentRun,
@@ -61,6 +64,7 @@ export function ControlPanel({
         </div>
         <Button
           onClick={onReset}
+          disabled={isRunning}
           variant="outline"
           className="w-full"
           size="lg"
@@ -108,6 +112,15 @@ export function ControlPanel({
             </Badge>
           </div>
         </div>
+
+        {progress !== null && isRunning && (
+          <div className="relative w-full">
+            <Progress value={progress * 100} className="h-4 w-full" />
+            <div className="text-primary-foreground absolute inset-0 flex items-center justify-center font-mono text-xs font-medium">
+              {Math.round(progress * 100)}%
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

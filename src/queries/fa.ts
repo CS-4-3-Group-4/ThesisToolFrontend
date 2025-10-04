@@ -18,6 +18,10 @@ async function postSingleRunFA() {
   await ax.post("/fa/single/run");
 }
 
+async function postMultipleRunFA(numRuns: number) {
+  await ax.post(`/fa/multiple/run?runs=${numRuns}`);
+}
+
 async function getIterationsFA() {
   const response = await ax.get<IterationsResponse>("/fa/iterations");
   return response.data;
@@ -49,5 +53,17 @@ export const startSingleRunFAMutationOptions = () =>
     mutationFn: postSingleRunFA,
     onError: (err) => {
       if (isAxiosError(err)) toast.error(err.response?.data.error);
+    },
+  });
+
+export const startMultipleRunFAMutationOptions = () =>
+  mutationOptions({
+    mutationFn: postMultipleRunFA,
+    onError: (err) => {
+      if (isAxiosError(err)) {
+        toast.error(
+          err.response?.data.error || "Failed to start multiple runs",
+        );
+      }
     },
   });

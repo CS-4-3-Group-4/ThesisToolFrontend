@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { SimulationHeader } from "./components/simulation/simulation-header";
-import type { AlgorithmMode, RunMode } from "./types";
+import type { AlgorithmMode, RunMode, SimulationParams } from "./types";
 import {
   Tabs,
   TabsContent,
@@ -16,24 +16,16 @@ import { RunModeSelector } from "./components/simulation/run-mode-selector";
 import { healthQueryOptions } from "./queries/common";
 import {
   startSingleRunFAMutationOptions,
+  startMultipleRunFAMutationOptions,
   stopFAMutationOptions,
   statusFAQueryOptions,
   iterationsFAQueryOptions,
 } from "./queries/fa";
 import { toast } from "sonner";
 
-interface SimulationParams {
-  numFireflies: number;
-  gamma: number;
-  beta0: number;
-  alpha0: number;
-  alphaFinal: number;
-  generations: number;
-}
-
 function App() {
   const [params] = useState<SimulationParams>({
-    generations: 300,
+    generations: 100,
     numFireflies: 50,
     alpha0: 0.6,
     alphaFinal: 0.05,
@@ -43,11 +35,13 @@ function App() {
 
   const [algorithmMode, setAlgorithmMode] = useState<AlgorithmMode>("original");
   const [runMode, setRunMode] = useState<RunMode>("single");
+  const [progress, setProgress] = useState<number | null>(null);
+
   const [numRuns, setNumRuns] = useState(30);
   const [currentRun, setCurrentRun] = useState(0);
 
   const [isRunning, setIsRunning] = useState(false);
-  const [isStarting, setIsStarting] = useState(false); // NEW: track startup state
+  const [isStarting, setIsStarting] = useState(false);
   const [currentIteration, setCurrentIteration] = useState(0);
   const [bestFitnessOriginal, setBestFitnessOriginal] = useState<number | null>(
     null,
@@ -73,18 +67,36 @@ function App() {
     refetchInterval: isRunning && runMode === "single" ? 100 : false,
   });
 
-  // Mutations with proper state management
-  const { mutate: startSingleRun } = useMutation({
+  // Single FA mutation
+  const { mutate: startSingleRunFA } = useMutation({
     ...startSingleRunFAMutationOptions(),
     onMutate: () => {
-      setIsStarting(true); // Lock the button during startup
+      setIsStarting(true);
     },
     onSuccess: () => {
       setIsRunning(true);
       setIsStarting(false);
+      toast.success("Single run started");
     },
     onError: () => {
-      setIsStarting(false); // Unlock on error
+      setIsStarting(false);
+      setIsRunning(false);
+    },
+  });
+
+  // Multiple FA mutation
+  const { mutate: startMultipleRunFA } = useMutation({
+    ...startMultipleRunFAMutationOptions(),
+    onMutate: () => {
+      setIsStarting(true);
+    },
+    onSuccess: () => {
+      setIsRunning(true);
+      setIsStarting(false);
+      toast.success(`Started ${numRuns} runs`);
+    },
+    onError: () => {
+      setIsStarting(false);
       setIsRunning(false);
     },
   });
@@ -93,26 +105,27 @@ function App() {
     ...stopFAMutationOptions(),
     onSuccess: () => {
       setIsRunning(false);
+      toast.info("Simulation stopped");
     },
   });
 
-  // Update state based on status data - FIXED
+  // Update state based on status data
   useEffect(() => {
     if (statusData) {
       // Handle different modes
       if (statusData.mode === "single") {
-        setCurrentIteration(statusData.currentIteration);
+        setCurrentIteration(statusData.currentIteration || 0);
       } else if (statusData.mode === "multiple") {
-        setCurrentRun(statusData.currentRun);
+        setCurrentRun(statusData.currentRun || 0);
       }
 
-      // FIXED: Only update isRunning based on backend state appropriately
-      // Don't let "idle" status during startup interfere
+      setProgress(statusData.progress || null);
+
+      // Only update isRunning based on backend state appropriately
       if (statusData.running && !isRunning && !isStarting) {
         // Backend started, frontend didn't know yet (edge case)
         setIsRunning(true);
       } else if (!statusData.running && isRunning && !isStarting) {
-        // Backend stopped (completed or error) - only stop if we're not starting
         setIsRunning(false);
 
         if (statusData.completed) {
@@ -126,7 +139,7 @@ function App() {
     }
   }, [statusData, isRunning, isStarting]);
 
-  // Update fitness from iteration history
+  // Update fitness from iteration history (single run only)
   useEffect(() => {
     if (
       iterationsData &&
@@ -157,11 +170,10 @@ function App() {
   }
 
   function handleOnStartSimulation() {
-    // Don't set isRunning here - let the mutation handle it
     if (runMode === "single") {
       switch (algorithmMode) {
         case "original":
-          startSingleRun();
+          startSingleRunFA();
           break;
         case "extended":
           toast.error("EXTENDED FA NOT YET IMPLEMENTED [SINGLE MODE]");
@@ -173,7 +185,7 @@ function App() {
     } else if (runMode === "multiple") {
       switch (algorithmMode) {
         case "original":
-          toast.error("ORIGINAL FA NOT YET IMPLEMENTED [MULTIPLE MODE]");
+          startMultipleRunFA(numRuns);
           break;
         case "extended":
           toast.error("EXTENDED FA NOT YET IMPLEMENTED [MULTIPLE MODE]");
@@ -188,10 +200,11 @@ function App() {
   function handleOnResetSimulation() {
     stopSimulation();
     setIsRunning(false);
-    setIsStarting(false); // Also reset starting state
+    setIsStarting(false);
     setCurrentIteration(0);
     setCurrentRun(0);
     setNumRuns(30);
+    setProgress(null);
     setBestFitnessOriginal(null);
     setBestFitnessExtended(null);
   }
@@ -199,14 +212,7 @@ function App() {
   return (
     <div className="bg-background min-h-screen p-6">
       <div className="mx-auto max-w-7xl space-y-6">
-        <SimulationHeader
-          apiStatus={apiStatus}
-          isRunning={isRunning || isStarting} // Show running state during startup too
-          currentIteration={currentIteration}
-          totalGenerations={params.generations}
-          algorithmMode={algorithmMode}
-          runMode={runMode}
-        />
+        <SimulationHeader apiStatus={apiStatus} />
 
         <Tabs defaultValue="simulation" className="space-y-6">
           <TabsList>
@@ -229,20 +235,21 @@ function App() {
               <AlgorithmSelector
                 algorithmMode={algorithmMode}
                 onAlgorithmModeChange={setAlgorithmMode}
-                isRunning={isRunning || isStarting} // Disable during startup too
+                isRunning={isRunning || isStarting}
               />
 
               <RunModeSelector
                 runMode={runMode}
                 numRuns={numRuns}
-                isRunning={isRunning || isStarting} // Disable during startup too
+                isRunning={isRunning || isStarting}
                 onRunModeChange={setRunMode}
                 onNumRunsChange={setNumRuns}
               />
 
               <div className="grid gap-6 lg:grid-cols-3">
                 <ControlPanel
-                  isRunning={isRunning || isStarting} // Disable button during both running and starting
+                  isRunning={isRunning || isStarting}
+                  progress={progress}
                   currentIteration={currentIteration}
                   totalGenerations={params.generations}
                   totalRuns={numRuns}

@@ -1,3 +1,12 @@
+export interface SimulationParams {
+  numFireflies: number;
+  gamma: number;
+  beta0: number;
+  alpha0: number;
+  alphaFinal: number;
+  generations: number;
+}
+
 export type AlgorithmMode = "original" | "extended" | "both";
 export type RunMode = "single" | "multiple";
 
