@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
 import { SingleRunFAResult } from "./components/results/single-run-fa-result";
+import { MultipleRunFAResult } from "./components/results/multiple-run-fa-result";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -165,6 +166,11 @@ function App() {
             refetchResults();
             refetchAllocations();
             refetchFlows();
+          }
+
+          // Fetch results data for multiple run mode
+          if (runMode === "multiple" && algorithmMode === "original") {
+            refetchResults();
           }
         } else if (statusData.error) {
           console.error("Simulation stopped with error:", statusData.error);
@@ -341,6 +347,7 @@ function App() {
             </TabsContent>
 
             <TabsContent value="results" className="space-y-6">
+              {/* Single Run Results */}
               {runMode === "single" &&
               algorithmMode === "original" &&
               resultsData &&
@@ -352,30 +359,67 @@ function App() {
                   allocations={allocationsData.allocations}
                   flows={flowsData.flows}
                 />
-              ) : (
+              ) : null}
+
+              {/* Multiple Run Results */}
+              {runMode === "multiple" &&
+              algorithmMode === "original" &&
+              resultsData &&
+              "totalRuns" in resultsData ? (
+                <MultipleRunFAResult result={resultsData} />
+              ) : null}
+
+              {/* No Results Message */}
+              {((runMode === "single" &&
+                (!resultsData ||
+                  !allocationsData ||
+                  !flowsData ||
+                  !("executionTimeMs" in resultsData))) ||
+                (runMode === "multiple" &&
+                  (!resultsData || !("totalRuns" in resultsData)))) &&
+              algorithmMode === "original" ? (
                 <Card>
                   <CardContent className="py-12">
                     <div className="text-muted-foreground text-center">
-                      {runMode !== "single" ? (
-                        <p>Results are only available for single run mode</p>
-                      ) : algorithmMode !== "original" ? (
+                      {algorithmMode !== "original" ? (
                         <p>
                           Results are only available for Original FA algorithm
                         </p>
-                      ) : !resultsData || !allocationsData || !flowsData ? (
+                      ) : !resultsData ? (
                         <p>
                           No results available yet. Run a simulation to see
                           results.
                         </p>
-                      ) : !("executionTimeMs" in resultsData) ? (
+                      ) : runMode === "single" &&
+                        !("executionTimeMs" in resultsData) ? (
                         <p>
                           Invalid result format. Expected single run results.
                         </p>
-                      ) : null}
+                      ) : runMode === "multiple" &&
+                        !("totalRuns" in resultsData) ? (
+                        <p>
+                          Invalid result format. Expected multiple run results.
+                        </p>
+                      ) : (
+                        <p>
+                          No results available yet. Run a simulation to see
+                          results.
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
-              )}
+              ) : algorithmMode !== "original" ? (
+                <Card>
+                  <CardContent className="py-12">
+                    <div className="text-muted-foreground text-center">
+                      <p>
+                        Results are only available for Original FA algorithm
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null}
             </TabsContent>
           </TabsContents>
         </Tabs>
