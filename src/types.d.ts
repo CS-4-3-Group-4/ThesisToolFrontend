@@ -40,7 +40,7 @@ export type StopResponse = {
 
 export type IterationsResponse = {
   iterations: Array<{
-    generation: number;
+    iteration: number;
     fitness: number;
   }>;
 };

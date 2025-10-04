@@ -23,16 +23,19 @@ import {
   iterationsFAQueryOptions,
 } from "./queries/fa";
 import { toast } from "sonner";
+import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
+
+const DEFAULT_PARAMS: SimulationParams = {
+  generations: 300,
+  numFireflies: 50,
+  alpha0: 0.6,
+  alphaFinal: 0.05,
+  beta0: 1.0,
+  gamma: 1.0,
+};
 
 function App() {
-  const [params, setParams] = useState<SimulationParams>({
-    generations: 100,
-    numFireflies: 50,
-    alpha0: 0.6,
-    alphaFinal: 0.05,
-    beta0: 1.0,
-    gamma: 1.0,
-  });
+  const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
 
   const [algorithmMode, setAlgorithmMode] = useState<AlgorithmMode>("original");
   const [runMode, setRunMode] = useState<RunMode>("single");
@@ -52,7 +55,7 @@ function App() {
   );
 
   // Health check query
-  const { data, isLoading, isError } = useQuery(healthQueryOptions());
+  const { data: health, isLoading, isError } = useQuery(healthQueryOptions());
 
   // Status polling query - only runs when isRunning is true
   const { data: statusData } = useQuery({
@@ -170,8 +173,13 @@ function App() {
     apiStatus = "checking";
   } else if (isError) {
     apiStatus = "disconnected";
-  } else if (data?.status === "UP") {
+  } else if (health?.status === "UP") {
     apiStatus = "connected";
+  }
+
+  function handleResetParams() {
+    setParams(DEFAULT_PARAMS);
+    toast.success("Parameters reset to defaults");
   }
 
   function handleParamChange(key: keyof SimulationParams, value: number) {
@@ -208,6 +216,7 @@ function App() {
 
   function handleOnResetSimulation() {
     stopSimulation();
+
     setIsRunning(false);
     setIsStarting(false);
     setCurrentIteration(0);
@@ -216,6 +225,10 @@ function App() {
     setProgress(null);
     setBestFitnessOriginal(null);
     setBestFitnessExtended(null);
+
+    if (iterationsData) {
+      iterationsData.iterations = [];
+    }
   }
 
   return (
@@ -271,6 +284,14 @@ function App() {
                   onStart={handleOnStartSimulation}
                   onReset={handleOnResetSimulation}
                 />
+
+                <div className="lg:col-span-2">
+                  {runMode === "single" ? (
+                    <ChartLineFitnessIteration
+                      data={iterationsData?.iterations ?? []}
+                    />
+                  ) : null}
+                </div>
               </div>
             </TabsContent>
 
@@ -279,6 +300,7 @@ function App() {
                 params={params}
                 isRunning={isRunning || isStarting}
                 onParamChange={handleParamChange}
+                onResetParams={handleResetParams}
               />
             </TabsContent>
 

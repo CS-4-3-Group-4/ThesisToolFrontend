@@ -9,21 +9,39 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 import type { SimulationParams } from "@/types";
 
 interface ParameterControlsProps {
   params: SimulationParams;
   isRunning: boolean;
   onParamChange: (key: keyof SimulationParams, value: number) => void;
+  onResetParams: () => void;
 }
 
 export function ParameterControls({
   params,
   isRunning,
   onParamChange,
+  onResetParams,
 }: ParameterControlsProps) {
   return (
     <div className="space-y-6">
+      {onResetParams && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onResetParams}
+            disabled={isRunning}
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reset to Defaults
+          </Button>
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
