@@ -9,6 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "./components/ui/motion-tabs";
+import { Card, CardContent } from "./components/ui/card";
 import { Activity, Settings2, TrendingUp } from "lucide-react";
 import { AlgorithmSelector } from "./components/simulation/algorithm-selector";
 import { ControlPanel } from "./components/simulation/control-panel";
@@ -158,13 +159,29 @@ function App() {
         if (statusData.completed) {
           console.log("Simulation completed successfully");
           toast.success("Simulation completed successfully");
+
+          // Fetch results data for single run mode
+          if (runMode === "single" && algorithmMode === "original") {
+            refetchResults();
+            refetchAllocations();
+            refetchFlows();
+          }
         } else if (statusData.error) {
           console.error("Simulation stopped with error:", statusData.error);
           toast.error(`Simulation error: ${statusData.error}`);
         }
       }
     }
-  }, [statusData, isRunning, isStarting]);
+  }, [
+    statusData,
+    isRunning,
+    isStarting,
+    runMode,
+    algorithmMode,
+    refetchResults,
+    refetchAllocations,
+    refetchFlows,
+  ]);
 
   // Update fitness from iteration history (single run only)
   useEffect(() => {
@@ -324,7 +341,41 @@ function App() {
             </TabsContent>
 
             <TabsContent value="results" className="space-y-6">
-              Result
+              {runMode === "single" &&
+              algorithmMode === "original" &&
+              resultsData &&
+              allocationsData &&
+              flowsData &&
+              "executionTimeMs" in resultsData ? (
+                <SingleRunFAResult
+                  result={resultsData}
+                  allocations={allocationsData.allocations}
+                  flows={flowsData.flows}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="py-12">
+                    <div className="text-muted-foreground text-center">
+                      {runMode !== "single" ? (
+                        <p>Results are only available for single run mode</p>
+                      ) : algorithmMode !== "original" ? (
+                        <p>
+                          Results are only available for Original FA algorithm
+                        </p>
+                      ) : !resultsData || !allocationsData || !flowsData ? (
+                        <p>
+                          No results available yet. Run a simulation to see
+                          results.
+                        </p>
+                      ) : !("executionTimeMs" in resultsData) ? (
+                        <p>
+                          Invalid result format. Expected single run results.
+                        </p>
+                      ) : null}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </TabsContents>
         </Tabs>
