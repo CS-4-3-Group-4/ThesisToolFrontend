@@ -61,8 +61,8 @@ export function ParameterControls({
               <Slider
                 id="numFireflies"
                 min={10}
-                max={200}
-                step={10}
+                max={150}
+                step={5}
                 value={[params.numFireflies]}
                 onValueChange={([value]) =>
                   onParamChange("numFireflies", value)
@@ -80,9 +80,9 @@ export function ParameterControls({
               </div>
               <Slider
                 id="generations"
-                min={50}
-                max={1000}
-                step={50}
+                min={10}
+                max={500}
+                step={1}
                 value={[params.generations]}
                 onValueChange={([value]) => onParamChange("generations", value)}
                 disabled={isRunning}
@@ -109,8 +109,8 @@ export function ParameterControls({
               <Slider
                 id="gamma"
                 min={0.1}
-                max={5.0}
-                step={0.1}
+                max={10.0}
+                step={0.05}
                 value={[params.gamma]}
                 onValueChange={([value]) => onParamChange("gamma", value)}
                 disabled={isRunning}
@@ -127,8 +127,8 @@ export function ParameterControls({
               <Slider
                 id="beta0"
                 min={0.1}
-                max={2.0}
-                step={0.1}
+                max={10.0}
+                step={0.05}
                 value={[params.beta0]}
                 onValueChange={([value]) => onParamChange("beta0", value)}
                 disabled={isRunning}
@@ -144,9 +144,9 @@ export function ParameterControls({
               </div>
               <Slider
                 id="alpha0"
-                min={0.1}
-                max={1.0}
-                step={0.05}
+                min={0.01}
+                max={1}
+                step={0.01}
                 value={[params.alpha0]}
                 onValueChange={([value]) => onParamChange("alpha0", value)}
                 disabled={isRunning}
@@ -165,7 +165,7 @@ export function ParameterControls({
               <Slider
                 id="alphaFinal"
                 min={0.01}
-                max={0.5}
+                max={1}
                 step={0.01}
                 value={[params.alphaFinal]}
                 onValueChange={([value]) => onParamChange("alphaFinal", value)}
