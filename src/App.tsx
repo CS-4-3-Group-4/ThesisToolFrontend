@@ -13,6 +13,7 @@ import { Activity, Settings2, TrendingUp } from "lucide-react";
 import { AlgorithmSelector } from "./components/simulation/algorithm-selector";
 import { ControlPanel } from "./components/simulation/control-panel";
 import { RunModeSelector } from "./components/simulation/run-mode-selector";
+import { ParameterControls } from "./components/simulation/parameter-controls";
 import { healthQueryOptions } from "./queries/common";
 import {
   startSingleRunFAMutationOptions,
@@ -24,7 +25,7 @@ import {
 import { toast } from "sonner";
 
 function App() {
-  const [params] = useState<SimulationParams>({
+  const [params, setParams] = useState<SimulationParams>({
     generations: 100,
     numFireflies: 50,
     alpha0: 0.6,
@@ -116,7 +117,11 @@ function App() {
       if (statusData.mode === "single") {
         setCurrentIteration(statusData.currentIteration || 0);
       } else if (statusData.mode === "multiple") {
-        setCurrentRun(statusData.currentRun || 0);
+        if (statusData.completedRuns === statusData.totalRuns) {
+          setCurrentRun(statusData.totalRuns);
+        } else {
+          setCurrentRun(statusData.currentRun || 0);
+        }
       }
 
       setProgress(statusData.progress || null);
@@ -169,11 +174,15 @@ function App() {
     apiStatus = "connected";
   }
 
+  function handleParamChange(key: keyof SimulationParams, value: number) {
+    setParams((prev) => ({ ...prev, [key]: value }));
+  }
+
   function handleOnStartSimulation() {
     if (runMode === "single") {
       switch (algorithmMode) {
         case "original":
-          startSingleRunFA();
+          startSingleRunFA(params);
           break;
         case "extended":
           toast.error("EXTENDED FA NOT YET IMPLEMENTED [SINGLE MODE]");
@@ -185,7 +194,7 @@ function App() {
     } else if (runMode === "multiple") {
       switch (algorithmMode) {
         case "original":
-          startMultipleRunFA(numRuns);
+          startMultipleRunFA({ params, numRuns });
           break;
         case "extended":
           toast.error("EXTENDED FA NOT YET IMPLEMENTED [MULTIPLE MODE]");
@@ -264,9 +273,15 @@ function App() {
                 />
               </div>
             </TabsContent>
+
             <TabsContent value="parameters" className="space-y-6">
-              <div>Parameters</div>
+              <ParameterControls
+                params={params}
+                isRunning={isRunning || isStarting}
+                onParamChange={handleParamChange}
+              />
             </TabsContent>
+
             <TabsContent value="results" className="space-y-6">
               <div>Results</div>
             </TabsContent>

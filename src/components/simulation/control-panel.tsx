@@ -89,22 +89,26 @@ export function ControlPanel({
               </Badge>
             )}
           </div>
-          {(algorithmMode === "original" || algorithmMode === "both") && (
-            <div className="bg-chart-1/10 flex items-center justify-between rounded-lg border p-3">
-              <span className="text-sm font-medium">Original FA Fitness</span>
-              <Badge variant="outline" className="font-mono">
-                {bestFitnessOriginal !== null ? bestFitnessOriginal : "—"}
-              </Badge>
-            </div>
-          )}
-          {(algorithmMode === "extended" || algorithmMode === "both") && (
-            <div className="bg-chart-2/10 flex items-center justify-between rounded-lg border p-3">
-              <span className="text-sm font-medium">Extended FA Fitness</span>
-              <Badge variant="outline" className="font-mono">
-                {bestFitnessExtended !== null ? bestFitnessExtended : "—"}
-              </Badge>
-            </div>
-          )}
+          {runMode === "single" &&
+            (algorithmMode === "original" || algorithmMode === "both") && (
+              <div className="bg-chart-1/10 flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-medium">Original FA Fitness</span>
+                <Badge variant="outline" className="font-mono">
+                  {bestFitnessOriginal !== null ? bestFitnessOriginal : "—"}
+                </Badge>
+              </div>
+            )}
+
+          {runMode === "single" &&
+            (algorithmMode === "extended" || algorithmMode === "both") && (
+              <div className="bg-chart-2/10 flex items-center justify-between rounded-lg border p-3">
+                <span className="text-sm font-medium">Extended FA Fitness</span>
+                <Badge variant="outline" className="font-mono">
+                  {bestFitnessExtended !== null ? bestFitnessExtended : "—"}
+                </Badge>
+              </div>
+            )}
+
           <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-3">
             <span className="text-sm font-medium">Population Size</span>
             <Badge variant="outline" className="font-mono">
