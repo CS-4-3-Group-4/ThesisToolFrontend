@@ -4,6 +4,9 @@ import type {
   StatusResponse,
   StopResponse,
   SimulationParams,
+  AllocationsResponse,
+  FlowsResponse,
+  ResultsResponse,
 } from "@/types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -11,6 +14,26 @@ import { toast } from "sonner";
 
 async function getStatusFA() {
   const response = await ax.get<StatusResponse>("/fa/status");
+  return response.data;
+}
+
+async function getIterationsFA() {
+  const response = await ax.get<IterationsResponse>("/fa/iterations");
+  return response.data;
+}
+
+async function getResultsFA() {
+  const response = await ax.get<ResultsResponse>("/fa/results");
+  return response.data;
+}
+
+async function getAllocationsFA() {
+  const response = await ax.get<AllocationsResponse>("/fa/allocations");
+  return response.data;
+}
+
+async function getFlowsFA() {
+  const response = await ax.get<FlowsResponse>("/fa/flows");
   return response.data;
 }
 
@@ -30,11 +53,6 @@ async function postMultipleRunFA(payload: {
   await ax.post(`/fa/multiple/run?runs=${payload.numRuns}`, payload.params);
 }
 
-async function getIterationsFA() {
-  const response = await ax.get<IterationsResponse>("/fa/iterations");
-  return response.data;
-}
-
 export const iterationsFAQueryOptions = () =>
   queryOptions({
     queryKey: ["iterations", "fa"],
@@ -47,6 +65,30 @@ export const statusFAQueryOptions = () =>
   queryOptions({
     queryKey: ["status", "fa"],
     queryFn: getStatusFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const resultsFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["results", "fa"],
+    queryFn: getResultsFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const allocationsFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["allocations", "fa"],
+    queryFn: getAllocationsFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const flowsFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["flows", "fa"],
+    queryFn: getFlowsFA,
     retry: 1,
     refetchOnWindowFocus: false,
   });

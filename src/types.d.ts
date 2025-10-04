@@ -44,3 +44,79 @@ export type IterationsResponse = {
     fitness: number;
   }>;
 };
+
+export interface AllocationsResponse {
+  allocations: Allocation[];
+}
+
+export interface FlowsResponse {
+  flows: Flow[];
+}
+
+export type ResultsResponse = SingleRunResult | MultipleRunResult;
+
+export interface Allocation {
+  id: string;
+  name: string;
+  personnel: Personnel;
+  total: number;
+}
+
+export interface Personnel {
+  SAR: number;
+  EMS: number;
+}
+
+export interface Flow {
+  classId: string;
+  className: string;
+  fromId: string;
+  fromName: string;
+  toId: string;
+  toName: string;
+  amount: number;
+}
+
+export interface SingleRunResult {
+  fitnessMaximization: number;
+  executionTimeMs: number;
+  memoryBytes: number;
+  totalIterations: number;
+  fitnessMinimization: number;
+}
+
+export interface MultipleRunResult {
+  totalRuns: number;
+  successfulRuns: number;
+  failedRuns: number;
+  totalDurationMs: number;
+  fitnessMaximization: {
+    best: number;
+    worst: number;
+    average: number;
+    standardDeviation: number;
+  };
+  fitnessMinimization: {
+    best: number;
+    worst: number;
+    average: number;
+    standardDeviation: number;
+  };
+  executionTime: {
+    average: number;
+    min: number;
+    max: number;
+  };
+  memory: {
+    average: number;
+    min: number;
+    max: number;
+  };
+  runs: Array<{
+    runNumber: number;
+    fitnessMaximization: number;
+    fitnessMinimization: number;
+    executionTimeMs: number;
+  }>;
+  errors?: string[]; // Optional, only present if there are errors
+}

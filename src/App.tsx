@@ -21,9 +21,13 @@ import {
   stopFAMutationOptions,
   statusFAQueryOptions,
   iterationsFAQueryOptions,
+  resultsFAQueryOptions,
+  allocationsFAQueryOptions,
+  flowsFAQueryOptions,
 } from "./queries/fa";
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
+import { SingleRunFAResult } from "./components/results/single-run-fa-result";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -69,6 +73,21 @@ function App() {
     ...iterationsFAQueryOptions(),
     enabled: isRunning && runMode === "single",
     refetchInterval: isRunning && runMode === "single" ? 100 : false,
+  });
+
+  const { data: resultsData, refetch: refetchResults } = useQuery({
+    ...resultsFAQueryOptions(),
+    enabled: false, // We'll manually trigger this
+  });
+
+  const { data: allocationsData, refetch: refetchAllocations } = useQuery({
+    ...allocationsFAQueryOptions(),
+    enabled: false,
+  });
+
+  const { data: flowsData, refetch: refetchFlows } = useQuery({
+    ...flowsFAQueryOptions(),
+    enabled: false,
   });
 
   // Single FA mutation
@@ -305,7 +324,7 @@ function App() {
             </TabsContent>
 
             <TabsContent value="results" className="space-y-6">
-              <div>Results</div>
+              Result
             </TabsContent>
           </TabsContents>
         </Tabs>
