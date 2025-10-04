@@ -273,6 +273,80 @@ function App() {
     }
   }
 
+  function renderResultsContent() {
+    // Algorithm not supported
+    if (algorithmMode !== "original") {
+      return (
+        <Card>
+          <CardContent className="py-12">
+            <div className="text-muted-foreground text-center">
+              <p>Results are only available for Original FA algorithm</p>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Simulation in progress
+    if (isRunning || isStarting) {
+      return (
+        <Card>
+          <CardContent className="py-12">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="border-primary h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"></div>
+              <div className="space-y-2 text-center">
+                <p className="text-lg font-medium">Simulation in Progress</p>
+                <p className="text-muted-foreground text-sm">
+                  {runMode === "single"
+                    ? `Running iteration ${currentIteration} of ${params.generations}`
+                    : `Running ${currentRun} of ${numRuns} simulations`}
+                </p>
+                {progress !== null && (
+                  <p className="text-muted-foreground text-sm">
+                    {Math.round(progress * 100)}% complete
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Single run results
+    if (
+      runMode === "single" &&
+      resultsData &&
+      allocationsData &&
+      flowsData &&
+      "executionTimeMs" in resultsData
+    ) {
+      return (
+        <SingleRunFAResult
+          result={resultsData}
+          allocations={allocationsData.allocations}
+          flows={flowsData.flows}
+        />
+      );
+    }
+
+    // Multiple run results
+    if (runMode === "multiple" && resultsData && "totalRuns" in resultsData) {
+      return <MultipleRunFAResult result={resultsData} />;
+    }
+
+    // No results available
+    return (
+      <Card>
+        <CardContent className="py-12">
+          <div className="text-muted-foreground text-center">
+            <p>No results available yet. Run a simulation to see results.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="bg-background min-h-screen p-6">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -347,79 +421,7 @@ function App() {
             </TabsContent>
 
             <TabsContent value="results" className="space-y-6">
-              {/* Single Run Results */}
-              {runMode === "single" &&
-              algorithmMode === "original" &&
-              resultsData &&
-              allocationsData &&
-              flowsData &&
-              "executionTimeMs" in resultsData ? (
-                <SingleRunFAResult
-                  result={resultsData}
-                  allocations={allocationsData.allocations}
-                  flows={flowsData.flows}
-                />
-              ) : null}
-
-              {/* Multiple Run Results */}
-              {runMode === "multiple" &&
-              algorithmMode === "original" &&
-              resultsData &&
-              "totalRuns" in resultsData ? (
-                <MultipleRunFAResult result={resultsData} />
-              ) : null}
-
-              {/* No Results Message */}
-              {((runMode === "single" &&
-                (!resultsData ||
-                  !allocationsData ||
-                  !flowsData ||
-                  !("executionTimeMs" in resultsData))) ||
-                (runMode === "multiple" &&
-                  (!resultsData || !("totalRuns" in resultsData)))) &&
-              algorithmMode === "original" ? (
-                <Card>
-                  <CardContent className="py-12">
-                    <div className="text-muted-foreground text-center">
-                      {algorithmMode !== "original" ? (
-                        <p>
-                          Results are only available for Original FA algorithm
-                        </p>
-                      ) : !resultsData ? (
-                        <p>
-                          No results available yet. Run a simulation to see
-                          results.
-                        </p>
-                      ) : runMode === "single" &&
-                        !("executionTimeMs" in resultsData) ? (
-                        <p>
-                          Invalid result format. Expected single run results.
-                        </p>
-                      ) : runMode === "multiple" &&
-                        !("totalRuns" in resultsData) ? (
-                        <p>
-                          Invalid result format. Expected multiple run results.
-                        </p>
-                      ) : (
-                        <p>
-                          No results available yet. Run a simulation to see
-                          results.
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : algorithmMode !== "original" ? (
-                <Card>
-                  <CardContent className="py-12">
-                    <div className="text-muted-foreground text-center">
-                      <p>
-                        Results are only available for Original FA algorithm
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : null}
+              {renderResultsContent()}
             </TabsContent>
           </TabsContents>
         </Tabs>
