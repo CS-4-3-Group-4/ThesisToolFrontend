@@ -94,13 +94,11 @@ export interface MultipleRunResult {
     best: number;
     worst: number;
     average: number;
-    standardDeviation: number;
   };
   fitnessMinimization: {
     best: number;
     worst: number;
     average: number;
-    standardDeviation: number;
   };
   executionTime: {
     average: number;
@@ -117,6 +115,7 @@ export interface MultipleRunResult {
     fitnessMaximization: number;
     fitnessMinimization: number;
     executionTimeMs: number;
+    memoryBytes: number;
   }>;
   errors?: string[]; // Optional, only present if there are errors
 }
