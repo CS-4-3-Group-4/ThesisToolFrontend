@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# Thesis Tool Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the **frontend interface** for the **Emergency Personnel Allocation system**, developed for our thesis project.
+It connects to the backend API to visualize and manage simulations of the **Firefly Algorithm (FA)** and **Extended Firefly Algorithm (EFA)**.
 
-Currently, two official plugins are available:
+The frontend provides a clean, interactive dashboard for running simulations, viewing convergence curves, analyzing metrics, and exporting results.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> **Note:** This project focuses on visualization and interaction — all computations are handled by the backend.
 
-## React Compiler
+---
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## ✨ Features
 
-## Expanding the ESLint configuration
+- **Interactive Dashboard** – Run and monitor FA and EFA simulations.
+- **Convergence Curve Visualization** – Displays fitness improvement over iterations.
+- **Performance Metrics** – Shows execution time, best/worst/average fitness, and standard deviation.
+- **CSV Export** – Download simulation results directly from the browser.
+- **API Integration** – Communicates with the backend running on port **8080**.
+- **Responsive UI** – Clean layout built with React, TypeScript, and modern styling.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 👥 Group Members
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Abainza, Rendel
+- de Dios, Wendel
+- Osana, Lester
+- Viado, John Paul
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+
+Make sure you have the following installed:
+
+- **Node.js** (version 18 or higher) → [Download Node.js](https://nodejs.org/)
+- **npm** (comes with Node.js)
+- **Git** → [Download Git](https://git-scm.com/downloads)
+
+---
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/CS-4-3-Group-4/ThesisToolFrontend.git
+cd ThesisToolFrontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 3. Create Environment File
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Before running the project, set up your environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Then open the newly created `.env` file and make sure it contains the correct backend API URL:
+
+```env
+VITE_BACKEND_URL="http://localhost:8080"
+```
+
+If your backend runs on a different host or port, update the value accordingly.
+
+---
+
+### 4. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 5. Run the Application
+
+Start the frontend development server:
+
+```bash
+npm run dev
+```
+
+Then open your browser and visit:
+
+```
+http://localhost:5173
+```
+
+> ⚠️ Make sure your **backend** is running before testing any API features.
+
+---
+
+### 6. Build for Production
+
+To create an optimized production build:
+
+```bash
+npm run build
+```
+
+You can preview the built app using:
+
+```bash
+npm run preview
 ```
