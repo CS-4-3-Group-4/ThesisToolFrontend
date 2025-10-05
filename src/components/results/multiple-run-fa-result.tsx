@@ -335,9 +335,7 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
                   <TableHead className="text-right">
                     Execution Time (ms)
                   </TableHead>
-                  <TableHead className="text-right">
-                    Memory Usage (bytes)
-                  </TableHead>
+                  <TableHead className="text-right">Memory (bytes)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
