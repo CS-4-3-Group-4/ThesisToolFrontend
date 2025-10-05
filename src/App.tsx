@@ -40,6 +40,8 @@ const DEFAULT_PARAMS: SimulationParams = {
   gamma: 1.0,
 };
 
+const REFETCH_INTERVAL_MS = 200;
+
 function App() {
   const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
 
@@ -67,14 +69,15 @@ function App() {
   const { data: statusData } = useQuery({
     ...statusFAQueryOptions(),
     enabled: isRunning,
-    refetchInterval: isRunning ? 100 : false,
+    refetchInterval: isRunning ? REFETCH_INTERVAL_MS : false,
   });
 
   // Iteration history polling - only for single run mode
   const { data: iterationsData } = useQuery({
     ...iterationsFAQueryOptions(),
     enabled: isRunning && runMode === "single",
-    refetchInterval: isRunning && runMode === "single" ? 100 : false,
+    refetchInterval:
+      isRunning && runMode === "single" ? REFETCH_INTERVAL_MS : false,
   });
 
   const { data: resultsData, refetch: refetchResults } = useQuery({

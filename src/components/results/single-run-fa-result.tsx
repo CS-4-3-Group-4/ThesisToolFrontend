@@ -21,7 +21,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Clock, MemoryStick, Info, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Clock,
+  MemoryStick,
+  Info,
+  TrendingUp,
+  Download,
+  FileSpreadsheet,
+  FileJson,
+} from "lucide-react";
+import { json2csv } from "json-2-csv";
 import type { Allocation, Flow, SingleRunResult } from "@/types";
 
 interface SingleRunResultProps {
@@ -41,6 +57,77 @@ export function SingleRunFAResult({
 
   // Convert ms to seconds for display
   const executionSeconds = (result.executionTimeMs / 1000).toFixed(3);
+
+  // Flatten allocations for cleaner CSV export (removes nested personnel object)
+  const flattenAllocations = () => {
+    return allocations.map((alloc) => ({
+      id: alloc.id,
+      name: alloc.name,
+      SAR: alloc.personnel.SAR,
+      EMS: alloc.personnel.EMS,
+      total: alloc.total,
+    }));
+  };
+
+  // Export allocations
+  const exportAllocations = (format: "csv" | "json") => {
+    const flattened = flattenAllocations();
+    let content: string;
+    let mimeType: string;
+    let filename: string;
+
+    if (format === "csv") {
+      content = json2csv(flattened, {
+        excelBOM: true,
+      });
+      mimeType = "text/csv";
+      filename = "allocations.csv";
+    } else {
+      content = JSON.stringify(flattened, null, 2);
+      mimeType = "application/json";
+      filename = "allocations.json";
+    }
+
+    downloadFile(content, filename, mimeType);
+  };
+
+  // Export flows
+  const exportFlows = (format: "csv" | "json") => {
+    let content: string;
+    let mimeType: string;
+    let filename: string;
+
+    if (format === "csv") {
+      content = json2csv(flows, {
+        excelBOM: true,
+      });
+      mimeType = "text/csv";
+      filename = "flows.csv";
+    } else {
+      content = JSON.stringify(flows, null, 2);
+      mimeType = "application/json";
+      filename = "flows.json";
+    }
+
+    downloadFile(content, filename, mimeType);
+  };
+
+  // Helper function to download file
+  const downloadFile = (
+    content: string,
+    filename: string,
+    mimeType: string,
+  ) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Card>
@@ -160,9 +247,27 @@ export function SingleRunFAResult({
 
         {/* Allocations Table */}
         <div>
-          <h3 className="mb-4 text-lg font-semibold">
-            Resource Allocations by Barangay
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold">
+              Resource Allocations by Barangay
+            </h3>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => exportAllocations("csv")}>
+                  <FileSpreadsheet /> Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportAllocations("json")}>
+                  <FileJson /> Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <div className="rounded-md border">
             <ScrollArea className="h-[400px]">
               <Table>
@@ -187,7 +292,7 @@ export function SingleRunFAResult({
                         {alloc.personnel.EMS}
                       </TableCell>
                       <TableCell className="text-right font-semibold">
-                        {alloc.personnel.SAR + alloc.personnel.EMS}
+                        {alloc.total}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -214,11 +319,7 @@ export function SingleRunFAResult({
                   </span>
                   <span className="text-primary">
                     Total:{" "}
-                    {allocations.reduce(
-                      (sum, alloc) =>
-                        sum + alloc.personnel.SAR + alloc.personnel.EMS,
-                      0,
-                    )}
+                    {allocations.reduce((sum, alloc) => sum + alloc.total, 0)}
                   </span>
                 </div>
               </div>
@@ -228,7 +329,25 @@ export function SingleRunFAResult({
 
         {/* Resource Flows */}
         <div>
-          <h3 className="mb-4 text-lg font-semibold">Resource Flows</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Resource Flows</h3>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => exportFlows("csv")}>
+                  <FileSpreadsheet /> Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportFlows("json")}>
+                  <FileJson /> Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <ScrollArea className="h-[400px] rounded-md border">
             <Table>
               <TableHeader>
