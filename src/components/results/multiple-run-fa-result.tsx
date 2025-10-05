@@ -21,7 +21,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TrendingUp, Clock, MemoryStick, Info, Timer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  TrendingUp,
+  Clock,
+  MemoryStick,
+  Info,
+  Timer,
+  Download,
+  FileSpreadsheet,
+  FileJson,
+} from "lucide-react";
+import { json2csv } from "json-2-csv";
 
 interface MultipleRunFAResultProps {
   result: MultipleRunResult;
@@ -35,6 +52,55 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
   // Convert ms to seconds
   const executionAvgSeconds = (result.executionTime.average / 1000).toFixed(3);
   const totalDurationSeconds = (result.totalDurationMs / 1000).toFixed(2);
+
+  // Flatten runs data for cleaner CSV export
+  const flattenRuns = () => {
+    return result.runs.map((run) => ({
+      runNumber: run.runNumber,
+      fitnessScore: run.fitnessMaximization,
+      executionTime: run.executionTimeMs,
+      memoryUsage: run.memoryBytes || 0,
+    }));
+  };
+
+  // Export individual runs
+  const exportRuns = (format: "csv" | "json") => {
+    const flattened = flattenRuns();
+    let content: string;
+    let mimeType: string;
+    let filename: string;
+
+    if (format === "csv") {
+      content = json2csv(flattened, {
+        excelBOM: true,
+      });
+      mimeType = "text/csv";
+      filename = "multiple-runs.csv";
+    } else {
+      content = JSON.stringify(flattened, null, 2);
+      mimeType = "application/json";
+      filename = "multiple-runs.json";
+    }
+
+    downloadFile(content, filename, mimeType);
+  };
+
+  // Helper function to download file
+  const downloadFile = (
+    content: string,
+    filename: string,
+    mimeType: string,
+  ) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Card>
@@ -239,7 +305,27 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
 
         {/* Individual Runs Table */}
         <div>
-          <h3 className="mb-4 text-lg font-semibold">Individual Run Details</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Individual Run Details</h3>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => exportRuns("csv")}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportRuns("json")}>
+                  <FileJson className="mr-2 h-4 w-4" />
+                  Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <ScrollArea className="h-[400px] rounded-md border p-2">
             <Table>
               <TableHeader>
@@ -249,7 +335,9 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
                   <TableHead className="text-right">
                     Execution Time (ms)
                   </TableHead>
-                  <TableHead className="text-right">Memory (bytes)</TableHead>
+                  <TableHead className="text-right">
+                    Memory Usage (bytes)
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
