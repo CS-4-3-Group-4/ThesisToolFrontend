@@ -38,19 +38,27 @@ import {
   FileJson,
 } from "lucide-react";
 import { json2csv } from "json-2-csv";
-import type { Allocation, Flow, SingleRunResult } from "@/types";
+import type { AlgorithmMode, Allocation, Flow, SingleRunResult } from "@/types";
 
 interface SingleRunResultProps {
   result: SingleRunResult;
   allocations: Allocation[];
   flows: Flow[];
+  algorithmMode: AlgorithmMode;
 }
 
-export function SingleRunFAResult({
+export function SingleRunResult({
   result,
   allocations,
   flows,
+  algorithmMode,
 }: SingleRunResultProps) {
+  const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
+  const algorithmFullName =
+    algorithmMode === "original"
+      ? "Firefly Algorithm (FA)"
+      : "Extended Firefly Algorithm (EFA)";
+
   // Convert bytes to MB for display
   const memoryMB = (result.memoryBytes / 1024 / 1024).toFixed(2);
   const memoryKB = (result.memoryBytes / 1024).toFixed(2);
@@ -81,11 +89,11 @@ export function SingleRunFAResult({
         excelBOM: true,
       });
       mimeType = "text/csv";
-      filename = "allocations.csv";
+      filename = `${algorithmName}-allocations.csv`;
     } else {
       content = JSON.stringify(flattened, null, 2);
       mimeType = "application/json";
-      filename = "allocations.json";
+      filename = `${algorithmName}-allocations.json`;
     }
 
     downloadFile(content, filename, mimeType);
@@ -102,11 +110,11 @@ export function SingleRunFAResult({
         excelBOM: true,
       });
       mimeType = "text/csv";
-      filename = "flows.csv";
+      filename = `${algorithmName}-flows.csv`;
     } else {
       content = JSON.stringify(flows, null, 2);
       mimeType = "application/json";
-      filename = "flows.json";
+      filename = `${algorithmName}-flows.json`;
     }
 
     downloadFile(content, filename, mimeType);
@@ -132,7 +140,7 @@ export function SingleRunFAResult({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Firefly Algorithm (FA) - Single Run Results</CardTitle>
+        <CardTitle>{algorithmFullName} - Single Run Results</CardTitle>
         <CardDescription>
           Performance metrics and resource allocation
         </CardDescription>
@@ -260,10 +268,12 @@ export function SingleRunFAResult({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => exportAllocations("csv")}>
-                  <FileSpreadsheet /> Export as CSV
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export as CSV
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => exportAllocations("json")}>
-                  <FileJson /> Export as JSON
+                  <FileJson className="mr-2 h-4 w-4" />
+                  Export as JSON
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -340,10 +350,12 @@ export function SingleRunFAResult({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => exportFlows("csv")}>
-                  <FileSpreadsheet /> Export as CSV
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export as CSV
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => exportFlows("json")}>
-                  <FileJson /> Export as JSON
+                  <FileJson className="mr-2 h-4 w-4" />
+                  Export as JSON
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

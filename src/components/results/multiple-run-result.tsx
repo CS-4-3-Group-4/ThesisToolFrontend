@@ -1,4 +1,4 @@
-import type { MultipleRunResult } from "@/types";
+import type { AlgorithmMode, MultipleRunResult } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Card,
@@ -40,11 +40,21 @@ import {
 } from "lucide-react";
 import { json2csv } from "json-2-csv";
 
-interface MultipleRunFAResultProps {
+interface MultipleRunResultProps {
   result: MultipleRunResult;
+  algorithmMode: AlgorithmMode;
 }
 
-export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
+export function MultipleRunResult({
+  result,
+  algorithmMode,
+}: MultipleRunResultProps) {
+  const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
+  const algorithmFullName =
+    algorithmMode === "original"
+      ? "Firefly Algorithm (FA)"
+      : "Extended Firefly Algorithm (EFA)";
+
   // Convert bytes to MB and KB
   const memoryAvgMB = (result.memory.average / 1024 / 1024).toFixed(2);
   const memoryAvgKB = (result.memory.average / 1024).toFixed(2);
@@ -75,11 +85,11 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
         excelBOM: true,
       });
       mimeType = "text/csv";
-      filename = "multiple-runs.csv";
+      filename = `${algorithmName}-multiple-runs.csv`;
     } else {
       content = JSON.stringify(flattened, null, 2);
       mimeType = "application/json";
-      filename = "multiple-runs.json";
+      filename = `${algorithmName}-multiple-runs.json`;
     }
 
     downloadFile(content, filename, mimeType);
@@ -105,7 +115,7 @@ export function MultipleRunFAResult({ result }: MultipleRunFAResultProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Firefly Algorithm (FA) - Multiple Runs Results</CardTitle>
+        <CardTitle>{algorithmFullName} - Multiple Runs Results</CardTitle>
         <CardDescription>
           Statistical analysis of {result.totalRuns} runs
         </CardDescription>

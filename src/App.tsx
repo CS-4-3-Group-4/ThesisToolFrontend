@@ -26,10 +26,20 @@ import {
   allocationsFAQueryOptions,
   flowsFAQueryOptions,
 } from "./queries/fa";
+import {
+  startSingleRunEFAMutationOptions,
+  startMultipleRunEFAMutationOptions,
+  stopEFAMutationOptions,
+  statusEFAQueryOptions,
+  iterationsEFAQueryOptions,
+  resultsEFAQueryOptions,
+  allocationsEFAQueryOptions,
+  flowsEFAQueryOptions,
+} from "./queries/efa";
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
-import { SingleRunFAResult } from "./components/results/single-run-fa-result";
-import { MultipleRunFAResult } from "./components/results/multiple-run-fa-result";
+import { SingleRunResult } from "./components/results/single-run-result";
+import { MultipleRunResult } from "./components/results/multiple-run-result";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -65,37 +75,89 @@ function App() {
   // Health check query
   const { data: health, isLoading, isError } = useQuery(healthQueryOptions());
 
-  // Status polling query - only runs when isRunning is true
-  const { data: statusData } = useQuery({
+  // Determine which algorithm queries to use
+  const isFA = algorithmMode === "original";
+  const isEFA = algorithmMode === "extended";
+
+  // Status polling query - switches based on algorithm mode
+  const { data: statusDataFA } = useQuery({
     ...statusFAQueryOptions(),
-    enabled: isRunning,
-    refetchInterval: isRunning ? REFETCH_INTERVAL_MS : false,
+    enabled: isRunning && isFA,
+    refetchInterval: isRunning && isFA ? REFETCH_INTERVAL_MS : false,
   });
+
+  const { data: statusDataEFA } = useQuery({
+    ...statusEFAQueryOptions(),
+    enabled: isRunning && isEFA,
+    refetchInterval: isRunning && isEFA ? REFETCH_INTERVAL_MS : false,
+  });
+
+  const statusData = isFA ? statusDataFA : statusDataEFA;
 
   // Iteration history polling - only for single run mode
-  const { data: iterationsData } = useQuery({
+  const { data: iterationsDataFA } = useQuery({
     ...iterationsFAQueryOptions(),
-    enabled: isRunning && runMode === "single",
+    enabled: isRunning && runMode === "single" && isFA,
     refetchInterval:
-      isRunning && runMode === "single" ? REFETCH_INTERVAL_MS : false,
+      isRunning && runMode === "single" && isFA ? REFETCH_INTERVAL_MS : false,
   });
 
-  const { data: resultsData, refetch: refetchResults } = useQuery({
+  const { data: iterationsDataEFA } = useQuery({
+    ...iterationsEFAQueryOptions(),
+    enabled: isRunning && runMode === "single" && isEFA,
+    refetchInterval:
+      isRunning && runMode === "single" && isEFA ? REFETCH_INTERVAL_MS : false,
+  });
+
+  const iterationsData = isFA ? iterationsDataFA : iterationsDataEFA;
+
+  // Results queries
+  const { data: resultsDataFA, refetch: refetchResultsFA } = useQuery({
     ...resultsFAQueryOptions(),
-    enabled: false, // We'll manually trigger this
+    enabled: false,
   });
 
-  const { data: allocationsData, refetch: refetchAllocations } = useQuery({
+  const { data: resultsDataEFA, refetch: refetchResultsEFA } = useQuery({
+    ...resultsEFAQueryOptions(),
+    enabled: false,
+  });
+
+  const resultsData = isFA ? resultsDataFA : resultsDataEFA;
+  const refetchResults = isFA ? refetchResultsFA : refetchResultsEFA;
+
+  // Allocations queries
+  const { data: allocationsDataFA, refetch: refetchAllocationsFA } = useQuery({
     ...allocationsFAQueryOptions(),
     enabled: false,
   });
 
-  const { data: flowsData, refetch: refetchFlows } = useQuery({
+  const { data: allocationsDataEFA, refetch: refetchAllocationsEFA } = useQuery(
+    {
+      ...allocationsEFAQueryOptions(),
+      enabled: false,
+    },
+  );
+
+  const allocationsData = isFA ? allocationsDataFA : allocationsDataEFA;
+  const refetchAllocations = isFA
+    ? refetchAllocationsFA
+    : refetchAllocationsEFA;
+
+  // Flows queries
+  const { data: flowsDataFA, refetch: refetchFlowsFA } = useQuery({
     ...flowsFAQueryOptions(),
     enabled: false,
   });
 
-  // Single FA mutation
+  const { data: flowsDataEFA, refetch: refetchFlowsEFA } = useQuery({
+    ...flowsEFAQueryOptions(),
+    enabled: false,
+  });
+
+  const flowsData = isFA ? flowsDataFA : flowsDataEFA;
+  const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
+
+  // FA mutations
   const { mutate: startSingleRunFA } = useMutation({
     ...startSingleRunFAMutationOptions(),
     onMutate: () => {
@@ -104,7 +166,7 @@ function App() {
     onSuccess: () => {
       setIsRunning(true);
       setIsStarting(false);
-      toast.success("Single run started");
+      toast.success("Single run started (Original FA)");
     },
     onError: () => {
       setIsStarting(false);
@@ -112,7 +174,6 @@ function App() {
     },
   });
 
-  // Multiple FA mutation
   const { mutate: startMultipleRunFA } = useMutation({
     ...startMultipleRunFAMutationOptions(),
     onMutate: () => {
@@ -121,7 +182,7 @@ function App() {
     onSuccess: () => {
       setIsRunning(true);
       setIsStarting(false);
-      toast.success(`Started ${numRuns} runs`);
+      toast.success(`Started ${numRuns} runs (Original FA)`);
     },
     onError: () => {
       setIsStarting(false);
@@ -129,11 +190,52 @@ function App() {
     },
   });
 
-  const { mutate: stopSimulation } = useMutation({
+  const { mutate: stopFA } = useMutation({
     ...stopFAMutationOptions(),
     onSuccess: () => {
       setIsRunning(false);
-      toast.info("Simulation stopped");
+      toast.info("Simulation stopped (Original FA)");
+    },
+  });
+
+  // EFA mutations
+  const { mutate: startSingleRunEFA } = useMutation({
+    ...startSingleRunEFAMutationOptions(),
+    onMutate: () => {
+      setIsStarting(true);
+    },
+    onSuccess: () => {
+      setIsRunning(true);
+      setIsStarting(false);
+      toast.success("Single run started (Extended FA)");
+    },
+    onError: () => {
+      setIsStarting(false);
+      setIsRunning(false);
+    },
+  });
+
+  const { mutate: startMultipleRunEFA } = useMutation({
+    ...startMultipleRunEFAMutationOptions(),
+    onMutate: () => {
+      setIsStarting(true);
+    },
+    onSuccess: () => {
+      setIsRunning(true);
+      setIsStarting(false);
+      toast.success(`Started ${numRuns} runs (Extended FA)`);
+    },
+    onError: () => {
+      setIsStarting(false);
+      setIsRunning(false);
+    },
+  });
+
+  const { mutate: stopEFA } = useMutation({
+    ...stopEFAMutationOptions(),
+    onSuccess: () => {
+      setIsRunning(false);
+      toast.info("Simulation stopped (Extended FA)");
     },
   });
 
@@ -165,14 +267,14 @@ function App() {
           toast.success("Simulation completed successfully");
 
           // Fetch results data for single run mode
-          if (runMode === "single" && algorithmMode === "original") {
+          if (runMode === "single") {
             refetchResults();
             refetchAllocations();
             refetchFlows();
           }
 
           // Fetch results data for multiple run mode
-          if (runMode === "multiple" && algorithmMode === "original") {
+          if (runMode === "multiple") {
             refetchResults();
           }
         } else if (statusData.error) {
@@ -186,7 +288,6 @@ function App() {
     isRunning,
     isStarting,
     runMode,
-    algorithmMode,
     refetchResults,
     refetchAllocations,
     refetchFlows,
@@ -206,8 +307,6 @@ function App() {
         setBestFitnessOriginal(lastIteration.fitness);
       } else if (algorithmMode === "extended") {
         setBestFitnessExtended(lastIteration.fitness);
-      } else if (algorithmMode === "both") {
-        toast.error("NOT YET IMPLEMENTED");
       }
     }
   }, [iterationsData, algorithmMode]);
@@ -238,7 +337,7 @@ function App() {
           startSingleRunFA(params);
           break;
         case "extended":
-          toast.error("EXTENDED FA NOT YET IMPLEMENTED [SINGLE MODE]");
+          startSingleRunEFA(params);
           break;
         case "both":
           toast.error("COMPARISON MODE NOT YET IMPLEMENTED [SINGLE MODE]");
@@ -250,7 +349,7 @@ function App() {
           startMultipleRunFA({ params, numRuns });
           break;
         case "extended":
-          toast.error("EXTENDED FA NOT YET IMPLEMENTED [MULTIPLE MODE]");
+          startMultipleRunEFA({ params, numRuns });
           break;
         case "both":
           toast.error("COMPARISON MODE NOT YET IMPLEMENTED [MULTIPLE MODE]");
@@ -260,7 +359,12 @@ function App() {
   }
 
   function handleOnResetSimulation() {
-    stopSimulation();
+    // Stop the appropriate algorithm
+    if (algorithmMode === "original") {
+      stopFA();
+    } else if (algorithmMode === "extended") {
+      stopEFA();
+    }
 
     setIsRunning(false);
     setIsStarting(false);
@@ -270,20 +374,16 @@ function App() {
     setProgress(null);
     setBestFitnessOriginal(null);
     setBestFitnessExtended(null);
-
-    if (iterationsData) {
-      iterationsData.iterations = [];
-    }
   }
 
   function renderResultsContent() {
     // Algorithm not supported
-    if (algorithmMode !== "original") {
+    if (algorithmMode === "both") {
       return (
         <Card>
           <CardContent className="py-12">
             <div className="text-muted-foreground text-center">
-              <p>Results are only available for Original FA algorithm</p>
+              <p>Comparison mode results not yet implemented</p>
             </div>
           </CardContent>
         </Card>
@@ -325,17 +425,20 @@ function App() {
       "executionTimeMs" in resultsData
     ) {
       return (
-        <SingleRunFAResult
+        <SingleRunResult
           result={resultsData}
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
+          algorithmMode={algorithmMode}
         />
       );
     }
 
     // Multiple run results
     if (runMode === "multiple" && resultsData && "totalRuns" in resultsData) {
-      return <MultipleRunFAResult result={resultsData} />;
+      return (
+        <MultipleRunResult result={resultsData} algorithmMode={algorithmMode} />
+      );
     }
 
     // No results available
