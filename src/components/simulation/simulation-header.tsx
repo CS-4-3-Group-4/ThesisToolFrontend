@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Zap, Database } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
+import { HowToGuideDialog } from "../dialogs/how-to-guide-dialog";
+import { FAQDialog } from "../dialogs/faq-dialog";
 
 interface SimulationHeaderProps {
   apiStatus: "connected" | "disconnected" | "checking";
@@ -11,15 +13,15 @@ export function SimulationHeader({ apiStatus }: SimulationHeaderProps) {
   return (
     <div className="from-background via-background to-muted/20 relative overflow-hidden rounded-xl border bg-gradient-to-br p-8">
       <div className="from-primary/5 absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l to-transparent" />
-
       <div className="relative flex items-start justify-between gap-6">
         <div className="flex-1 space-y-4">
           <HeaderTitle />
           <HeaderDescription />
           <HeaderBadges apiStatus={apiStatus} />
         </div>
-
         <div className="flex items-center gap-3">
+          <HowToGuideDialog />
+          <FAQDialog />
           <ThemeToggle />
         </div>
       </div>
