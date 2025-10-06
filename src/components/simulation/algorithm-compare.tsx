@@ -153,7 +153,7 @@ function SingleRunCompare() {
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
+        <Card className="hover:border-primary border-2 border-dashed">
           <CardHeader>
             <CardTitle>Firefly Algorithm (FA)</CardTitle>
             <CardDescription>
@@ -197,7 +197,7 @@ function SingleRunCompare() {
           </CardContent>
         </Card>
 
-        <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
+        <Card className="hover:border-primary border-2 border-dashed">
           <CardHeader>
             <CardTitle>Extended Firefly Algorithm (EFA)</CardTitle>
             <CardDescription>
@@ -459,7 +459,7 @@ function MultipleRunCompare() {
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
+        <Card className="hover:border-primary border-2 border-dashed">
           <CardHeader>
             <CardTitle>Firefly Algorithm (FA)</CardTitle>
             <CardDescription>
@@ -507,7 +507,7 @@ function MultipleRunCompare() {
           </CardContent>
         </Card>
 
-        <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
+        <Card className="hover:border-primary border-2 border-dashed">
           <CardHeader>
             <CardTitle>Extended Firefly Algorithm (EFA)</CardTitle>
             <CardDescription>
