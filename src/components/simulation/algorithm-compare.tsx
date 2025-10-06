@@ -172,9 +172,13 @@ export function AlgorithmCompare() {
     }
   };
 
-  const handleReset = () => {
+  const handleResetSingle = () => {
     setFASingleFile(null);
     setEFASingleFile(null);
+    setErrorMessage(null);
+  };
+
+  const handleResetMultiple = () => {
     setFAMultipleFile(null);
     setEFAMultipleFile(null);
     setErrorMessage(null);
@@ -209,6 +213,14 @@ export function AlgorithmCompare() {
       {/* Single Run Mode */}
       {compareMode === "single" && (
         <>
+          {(FASingleFile || EFASingleFile) && (
+            <div className="mb-6 flex justify-center">
+              <Button variant="destructive" onClick={handleResetSingle}>
+                Reset Single Run Files
+              </Button>
+            </div>
+          )}
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
               <CardHeader>
@@ -440,6 +452,14 @@ export function AlgorithmCompare() {
       {/* Multiple Run Mode */}
       {compareMode === "multiple" && (
         <>
+          {(FAMultipleFile || EFAMultipleFile) && (
+            <div className="mb-6 flex justify-center">
+              <Button variant="destructive" onClick={handleResetMultiple}>
+                Reset Multiple Run Files
+              </Button>
+            </div>
+          )}
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="hover:border-primary border-2 border-dashed transition-all duration-200">
               <CardHeader>
@@ -776,16 +796,6 @@ export function AlgorithmCompare() {
         <div className="bg-destructive/10 text-destructive flex items-center justify-center gap-2 rounded-md p-3 text-sm font-medium">
           <AlertTriangle className="h-4 w-4" />
           {errorMessage}
-        </div>
-      )}
-
-      {((compareMode === "single" && (FASingleFile || EFASingleFile)) ||
-        (compareMode === "multiple" &&
-          (FAMultipleFile || EFAMultipleFile))) && (
-        <div className="flex justify-center">
-          <Button variant="destructive" onClick={handleReset}>
-            Reset Files
-          </Button>
         </div>
       )}
     </div>
