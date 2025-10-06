@@ -85,9 +85,9 @@ export function RunModeSelector({
               disabled={isRunning}
               className="font-mono"
             />
-            <p className="text-muted-foreground text-xs">
+            {/* <p className="text-muted-foreground text-xs">
               Recommended: 30 runs for statistical significance
-            </p>
+            </p> */}
           </div>
         )}
       </CardContent>
