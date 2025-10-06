@@ -8,7 +8,7 @@ export interface SimulationParams {
   betaMin?: number; // Optional - only used by EFA
 }
 
-export type AlgorithmMode = "original" | "extended" | "both";
+export type AlgorithmMode = "original" | "extended";
 export type RunMode = "single" | "multiple";
 
 export type StatusResponse =

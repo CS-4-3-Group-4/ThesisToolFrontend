@@ -340,9 +340,6 @@ function App() {
         case "extended":
           startSingleRunEFA(params);
           break;
-        case "both":
-          toast.error("COMPARISON MODE NOT YET IMPLEMENTED [SINGLE MODE]");
-          break;
       }
     } else if (runMode === "multiple") {
       switch (algorithmMode) {
@@ -351,9 +348,6 @@ function App() {
           break;
         case "extended":
           startMultipleRunEFA({ params, numRuns });
-          break;
-        case "both":
-          toast.error("COMPARISON MODE NOT YET IMPLEMENTED [MULTIPLE MODE]");
           break;
       }
     }
@@ -378,19 +372,6 @@ function App() {
   }
 
   function renderResultsContent() {
-    // Algorithm not supported
-    if (algorithmMode === "both") {
-      return (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-muted-foreground text-center">
-              <p>Comparison mode results not yet implemented</p>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
     // Simulation in progress
     if (isRunning || isStarting) {
       return (
