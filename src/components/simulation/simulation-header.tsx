@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Zap, Database, Clock } from "lucide-react";
+import { Zap, Database } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 
 interface SimulationHeaderProps {
@@ -51,8 +51,8 @@ function HeaderDescription() {
   return (
     <p className="text-muted-foreground max-w-2xl text-pretty">
       Compare and analyze the performance of Original and Extended Firefly
-      Algorithms with real-time visualization, parameter tuning, and
-      comprehensive metrics tracking.
+      Algorithms with visualization, parameter tuning, and comprehensive metrics
+      tracking.
     </p>
   );
 }
@@ -67,11 +67,7 @@ function HeaderBadges({
     <div className="flex flex-wrap items-center gap-3">
       <Badge variant="outline" className="gap-1.5">
         <Database className="h-3 w-3" />
-        Backend: Java + Javalin
-      </Badge>
-      <Badge variant="outline" className="gap-1.5">
-        <Clock className="h-3 w-3" />
-        Real-time Analysis
+        Backend: Java
       </Badge>
       <Badge
         variant={apiStatus === "connected" ? "default" : "destructive"}
