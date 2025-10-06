@@ -332,9 +332,8 @@ function App() {
   }
 
   function validateParameters() {
-    // Check betaMin constraint for extended mode
     if (
-      (algorithmMode === "extended" || algorithmMode === "both") &&
+      algorithmMode === "extended" &&
       params.betaMin !== undefined &&
       params.betaMin > params.beta0
     ) {
