@@ -13,6 +13,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { UploadIcon, CheckCircle2 } from "lucide-react";
 import type { Flow } from "@/types";
 import { ChartLineCompareIteration } from "../charts/performance/chart-line-compare-iteration";
@@ -56,6 +57,11 @@ export function AlgorithmCompare() {
     } catch (error) {
       console.error("Invalid JSON file", error);
     }
+  };
+
+  const handleReset = () => {
+    setFAFile(null);
+    setEFAFile(null);
   };
 
   const bothUploaded = FAFile && EFAFile;
@@ -159,16 +165,30 @@ export function AlgorithmCompare() {
         </Card>
       </div>
 
+      {/* === Reset Button (shows when any file is uploaded) === */}
+      {(FAFile || EFAFile) && (
+        <div className="flex justify-center">
+          <Button variant="destructive" onClick={handleReset}>
+            Reset Files
+          </Button>
+        </div>
+      )}
+
       {/* === Comparison Section === */}
       {bothUploaded && (
         <div className="space-y-6">
-          <div>
-            <h2 className="text-center text-2xl font-bold">
-              Algorithm Comparison — FA vs EFA (Single Run)
-            </h2>
-            <p className="text-muted-foreground text-center text-sm">
-              Side-by-side comparison of both algorithms
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">
+                Algorithm Comparison — FA vs EFA (Single Run)
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Side-by-side comparison of both algorithms
+              </p>
+            </div>
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
           </div>
 
           {/* Metrics */}
@@ -254,7 +274,7 @@ export function AlgorithmCompare() {
                       Iterations
                     </span>
                     <span className="font-semibold">
-                      {EFAFile.allocations.length}
+                      {EFAFile.iterations.length}
                     </span>
                   </div>
                 </div>
