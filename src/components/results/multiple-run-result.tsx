@@ -73,6 +73,18 @@ export function MultipleRunResult({
     }));
   };
 
+  // Export complete run data as JSON
+  const exportCompleteData = () => {
+    const completeData = {
+      algorithm: algorithmName,
+      result: result,
+    };
+
+    const content = JSON.stringify(completeData, null, 2);
+    const filename = `${algorithmName}-multiple-runs-${Date.now()}.json`;
+    downloadFile(content, filename, "application/json");
+  };
+
   // Export individual runs
   const exportRuns = (format: "csv" | "json") => {
     const flattened = flattenRuns();
@@ -115,10 +127,18 @@ export function MultipleRunResult({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{algorithmFullName} - Multiple Runs Results</CardTitle>
-        <CardDescription>
-          Statistical analysis of {result.totalRuns} runs
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{algorithmFullName} - Multiple Runs Results</CardTitle>
+            <CardDescription>
+              Statistical analysis of {result.totalRuns} runs
+            </CardDescription>
+          </div>
+          <Button variant="default" onClick={exportCompleteData}>
+            <Download className="mr-2 h-4 w-4" />
+            Export Complete Data
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Summary Stats */}
