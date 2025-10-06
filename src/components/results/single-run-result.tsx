@@ -45,6 +45,7 @@ interface SingleRunResultProps {
   allocations: Allocation[];
   flows: Flow[];
   algorithmMode: AlgorithmMode;
+  iterations: Array<{ iteration: number; fitness: number }>;
 }
 
 export function SingleRunResult({
@@ -52,6 +53,7 @@ export function SingleRunResult({
   allocations,
   flows,
   algorithmMode,
+  iterations,
 }: SingleRunResultProps) {
   const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
   const algorithmFullName =
@@ -75,6 +77,26 @@ export function SingleRunResult({
       EMS: alloc.personnel.EMS,
       total: alloc.total,
     }));
+  };
+
+  // Export complete run data as JSON
+  const exportCompleteData = () => {
+    const completeData = {
+      algorithm: algorithmName,
+      result: {
+        fitnessMaximization: result.fitnessMaximization,
+        fitnessMinimization: result.fitnessMinimization,
+        executionTimeMs: result.executionTimeMs,
+        memoryBytes: result.memoryBytes,
+      },
+      iterations: iterations,
+      allocations: flattenAllocations(),
+      flows: flows,
+    };
+
+    const content = JSON.stringify(completeData, null, 2);
+    const filename = `${algorithmName}-complete-run-${Date.now()}.json`;
+    downloadFile(content, filename, "application/json");
   };
 
   // Export allocations
@@ -140,10 +162,18 @@ export function SingleRunResult({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{algorithmFullName} - Single Run Results</CardTitle>
-        <CardDescription>
-          Performance metrics and resource allocation
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{algorithmFullName} - Single Run Results</CardTitle>
+            <CardDescription>
+              Performance metrics and resource allocation
+            </CardDescription>
+          </div>
+          <Button variant="default" onClick={exportCompleteData}>
+            <Download className="mr-2 h-4 w-4" />
+            Export Complete Data
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Metrics Grid */}
@@ -309,31 +339,6 @@ export function SingleRunResult({
                 </TableBody>
               </Table>
             </ScrollArea>
-            {/* <div className="bg-muted/50 border-t px-4 py-3">
-              <div className="flex items-center justify-between text-sm font-semibold">
-                <span>Total Personnel</span>
-                <div className="flex gap-8">
-                  <span>
-                    SAR:{" "}
-                    {allocations.reduce(
-                      (sum, alloc) => sum + alloc.personnel.SAR,
-                      0,
-                    )}
-                  </span>
-                  <span>
-                    EMS:{" "}
-                    {allocations.reduce(
-                      (sum, alloc) => sum + alloc.personnel.EMS,
-                      0,
-                    )}
-                  </span>
-                  <span className="text-primary">
-                    Total:{" "}
-                    {allocations.reduce((sum, alloc) => sum + alloc.total, 0)}
-                  </span>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
 

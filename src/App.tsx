@@ -10,7 +10,12 @@ import {
   TabsTrigger,
 } from "./components/ui/motion-tabs";
 import { Card, CardContent } from "./components/ui/card";
-import { Activity, Settings2, TrendingUp } from "lucide-react";
+import {
+  Activity,
+  GitCompareArrows,
+  Settings2,
+  TrendingUp,
+} from "lucide-react";
 import { AlgorithmSelector } from "./components/simulation/algorithm-selector";
 import { ControlPanel } from "./components/simulation/control-panel";
 import { RunModeSelector } from "./components/simulation/run-mode-selector";
@@ -40,6 +45,7 @@ import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
 import { SingleRunResult } from "./components/results/single-run-result";
 import { MultipleRunResult } from "./components/results/multiple-run-result";
+import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -420,6 +426,7 @@ function App() {
     if (
       runMode === "single" &&
       resultsData &&
+      iterationsData &&
       allocationsData &&
       flowsData &&
       "executionTimeMs" in resultsData
@@ -430,6 +437,7 @@ function App() {
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
           algorithmMode={algorithmMode}
+          iterations={iterationsData.iterations}
         />
       );
     }
@@ -471,6 +479,10 @@ function App() {
             <TabsTrigger value="results">
               <TrendingUp className="mr-2 h-4 w-4" />
               Results
+            </TabsTrigger>
+            <TabsTrigger value="compare">
+              <GitCompareArrows className="mr-2 h-4 w-4" />
+              Compare
             </TabsTrigger>
           </TabsList>
 
@@ -529,6 +541,10 @@ function App() {
 
             <TabsContent value="results" className="space-y-6">
               {renderResultsContent()}
+            </TabsContent>
+
+            <TabsContent value="compare" className="space-y-6">
+              <AlgorithmCompare />
             </TabsContent>
           </TabsContents>
         </Tabs>
