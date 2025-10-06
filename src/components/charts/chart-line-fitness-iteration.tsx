@@ -1,4 +1,3 @@
-import { TrendingDown, TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import {
@@ -137,50 +136,48 @@ export function ChartLineFitnessIteration({
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <ChartFooterSummary data={data} />
-      </CardFooter>
+      <CardFooter>{/* <ChartFooterSummary data={data} /> */}</CardFooter>
     </Card>
   );
 }
 
-interface ChartFooterSummaryProps {
-  data: { iteration: number; fitness: number }[];
-}
+// interface ChartFooterSummaryProps {
+//   data: { iteration: number; fitness: number }[];
+// }
 
-function ChartFooterSummary({ data }: ChartFooterSummaryProps) {
-  if (!data || data.length === 0) return null;
+// function ChartFooterSummary({ data }: ChartFooterSummaryProps) {
+//   if (!data || data.length === 0) return null;
 
-  const first = data[0].fitness;
-  const last = data.at(-1)!.fitness;
-  const diff = last - first;
-  const percentChange = ((diff / first) * 100).toFixed(2);
+//   const first = data[0].fitness;
+//   const last = data.at(-1)!.fitness;
+//   const diff = last - first;
+//   const percentChange = ((diff / first) * 100).toFixed(2);
 
-  const trend =
-    diff > 0
-      ? { label: "improved", Icon: TrendingUp, color: "text-green-500" }
-      : diff < 0
-        ? { label: "declined", Icon: TrendingDown, color: "text-red-500" }
-        : {
-            label: "remained stable",
-            Icon: null,
-            color: "text-muted-foreground",
-          };
+//   const trend =
+//     diff > 0
+//       ? { label: "improved", Icon: TrendingUp, color: "text-green-500" }
+//       : diff < 0
+//         ? { label: "declined", Icon: TrendingDown, color: "text-red-500" }
+//         : {
+//             label: "remained stable",
+//             Icon: null,
+//             color: "text-muted-foreground",
+//           };
 
-  const Icon = trend.Icon;
+//   const Icon = trend.Icon;
 
-  return (
-    <div className="flex-col items-start gap-2 text-sm">
-      <div className="flex items-center gap-2 leading-none font-medium">
-        Fitness Score {trend.label}
-        {diff !== 0 && (
-          <>
-            {" "}
-            by {Math.abs(Number(percentChange))}%{" "}
-            {Icon && <Icon className={`h-4 w-4 ${trend.color}`} />}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className="flex-col items-start gap-2 text-sm">
+//       <div className="flex items-center gap-2 leading-none font-medium">
+//         Fitness Score {trend.label}
+//         {diff !== 0 && (
+//           <>
+//             {" "}
+//             by {Math.abs(Number(percentChange))}%{" "}
+//             {Icon && <Icon className={`h-4 w-4 ${trend.color}`} />}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
