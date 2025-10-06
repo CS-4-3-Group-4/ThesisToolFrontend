@@ -152,7 +152,7 @@ export function ParameterControls({
                 <Slider
                   id="betaMin"
                   min={0.1}
-                  max={10.0}
+                  max={0.5}
                   step={0.05}
                   value={[params.betaMin ?? 0.2]}
                   onValueChange={([value]) => onParamChange("betaMin", value)}

@@ -331,7 +331,26 @@ function App() {
     setParams((prev) => ({ ...prev, [key]: value }));
   }
 
+  function validateParameters() {
+    // Check betaMin constraint for extended mode
+    if (
+      (algorithmMode === "extended" || algorithmMode === "both") &&
+      params.betaMin !== undefined &&
+      params.betaMin > params.beta0
+    ) {
+      toast.error(
+        `Invalid parameters: Beta Min (${params.betaMin.toFixed(2)}) must be ≤ Beta₀ (${params.beta0.toFixed(2)})`,
+      );
+      return false;
+    }
+    return true;
+  }
+
   function handleOnStartSimulation() {
+    if (!validateParameters()) {
+      return;
+    }
+
     if (runMode === "single") {
       switch (algorithmMode) {
         case "original":
