@@ -14,7 +14,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UploadIcon, CheckCircle2 } from "lucide-react";
+import { UploadIcon, CheckCircle2, AlertTriangle } from "lucide-react";
 import type { Flow } from "@/types";
 import { ChartLineCompareIteration } from "../charts/performance/chart-line-compare-iteration";
 
@@ -43,6 +43,33 @@ export interface AlgorithmFile {
 export function AlgorithmCompare() {
   const [FAFile, setFAFile] = useState<AlgorithmFile | null>(null);
   const [EFAFile, setEFAFile] = useState<AlgorithmFile | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const validateAlgorithmFile = (data: any): data is AlgorithmFile => {
+    if (!data || typeof data !== "object") return false;
+
+    const hasRequiredTopLevel =
+      typeof data.algorithm === "string" &&
+      data.result &&
+      Array.isArray(data.iterations) &&
+      Array.isArray(data.allocations) &&
+      Array.isArray(data.flows);
+
+    const hasResultFields =
+      data.result &&
+      typeof data.result.fitnessMaximization === "number" &&
+      typeof data.result.fitnessMinimization === "number" &&
+      typeof data.result.executionTimeMs === "number" &&
+      typeof data.result.memoryBytes === "number";
+
+    const hasIterationStructure =
+      data.iterations.length === 0 ||
+      (typeof data.iterations[0].iteration === "number" &&
+        typeof data.iterations[0].fitness === "number");
+
+    return hasRequiredTopLevel && hasResultFields && hasIterationStructure;
+  };
 
   const handleFileDrop = async (
     files: File[],
@@ -50,18 +77,30 @@ export function AlgorithmCompare() {
   ) => {
     const file = files[0];
     if (!file) return;
+
     try {
       const text = await file.text();
-      const json: AlgorithmFile = JSON.parse(text);
+      const json = JSON.parse(text);
+
+      if (!validateAlgorithmFile(json)) {
+        setErrorMessage(
+          "Invalid file structure. Please upload a valid algorithm result JSON.",
+        );
+        return;
+      }
+
+      setErrorMessage(null);
       setFile(json);
     } catch (error) {
       console.error("Invalid JSON file", error);
+      setErrorMessage("Invalid JSON file format. Please upload a valid JSON.");
     }
   };
 
   const handleReset = () => {
     setFAFile(null);
     setEFAFile(null);
+    setErrorMessage(null);
   };
 
   const bothUploaded = FAFile && EFAFile;
@@ -164,6 +203,14 @@ export function AlgorithmCompare() {
           </CardContent>
         </Card>
       </div>
+
+      {/* === Error Message === */}
+      {errorMessage && (
+        <div className="bg-destructive/10 text-destructive flex items-center justify-center gap-2 rounded-md p-3 text-sm font-medium">
+          <AlertTriangle className="h-4 w-4" />
+          {errorMessage}
+        </div>
+      )}
 
       {/* === Reset Button (shows when any file is uploaded) === */}
       {(FAFile || EFAFile) && (
