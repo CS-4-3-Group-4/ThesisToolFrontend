@@ -7,6 +7,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useState } from "react";
+import { Switch } from "@/components/ui/switch"; // Import Switch
 import type { MultipleRunResult } from "@/types";
 
 const chartConfig = {
@@ -25,6 +26,7 @@ export function ChartLineCompareFitnessRun({
   efaData,
 }: ChartLineCompareProps) {
   const [activeLines, setActiveLines] = useState<string[]>([]);
+  const [useAutoDomain, setUseAutoDomain] = useState(true); // State for domain toggle
 
   function handleLegendClick(dataKey: string) {
     if (activeLines.includes(dataKey)) {
@@ -47,6 +49,16 @@ export function ChartLineCompareFitnessRun({
         <CardTitle className="text-center">
           Algorithm Comparison: Fitness Score Across Runs
         </CardTitle>
+        <div className="mt-2 flex items-center justify-center gap-2">
+          <Switch
+            checked={useAutoDomain}
+            onCheckedChange={setUseAutoDomain}
+            id="domain-toggle-fitness"
+          />
+          <label htmlFor="domain-toggle-fitness" className="text-sm">
+            Use Auto Domain
+          </label>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -81,7 +93,7 @@ export function ChartLineCompareFitnessRun({
               tickMargin={8}
               tickCount={8}
               allowDecimals={true}
-              domain={["auto", "auto"]}
+              domain={useAutoDomain ? ["auto", "auto"] : undefined}
               tickFormatter={(value) => value.toFixed(6)}
               label={{
                 value: "Fitness Score",
@@ -161,6 +173,7 @@ export function ChartLineCompareExecutionTimeRun({
   efaData,
 }: ChartLineCompareProps) {
   const [activeLines, setActiveLines] = useState<string[]>([]);
+  const [useAutoDomain, setUseAutoDomain] = useState(true); // State for domain toggle
 
   function handleLegendClick(dataKey: string) {
     if (activeLines.includes(dataKey)) {
@@ -183,6 +196,16 @@ export function ChartLineCompareExecutionTimeRun({
         <CardTitle className="text-center">
           Algorithm Comparison: Execution Time Across Runs
         </CardTitle>
+        <div className="mt-2 flex items-center justify-center gap-2">
+          <Switch
+            checked={useAutoDomain}
+            onCheckedChange={setUseAutoDomain}
+            id="domain-toggle-execution"
+          />
+          <label htmlFor="domain-toggle-execution" className="text-sm">
+            Use Auto Domain
+          </label>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -217,7 +240,7 @@ export function ChartLineCompareExecutionTimeRun({
               tickMargin={8}
               tickCount={8}
               allowDecimals={true}
-              domain={["auto", "auto"]}
+              domain={useAutoDomain ? ["auto", "auto"] : undefined}
               tickFormatter={(value) => value.toFixed(2)}
               label={{
                 value: "Execution Time (ms)",
@@ -298,6 +321,7 @@ export function ChartLineCompareMemoryUsageRun({
   efaData,
 }: ChartLineCompareProps) {
   const [activeLines, setActiveLines] = useState<string[]>([]);
+  const [useAutoDomain, setUseAutoDomain] = useState(true); // State for domain toggle
 
   function handleLegendClick(dataKey: string) {
     if (activeLines.includes(dataKey)) {
@@ -320,6 +344,16 @@ export function ChartLineCompareMemoryUsageRun({
         <CardTitle className="text-center">
           Algorithm Comparison: Memory Usage Across Runs
         </CardTitle>
+        <div className="mt-2 flex items-center justify-center gap-2">
+          <Switch
+            checked={useAutoDomain}
+            onCheckedChange={setUseAutoDomain}
+            id="domain-toggle-memory"
+          />
+          <label htmlFor="domain-toggle-memory" className="text-sm">
+            Use Auto Domain
+          </label>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -354,7 +388,7 @@ export function ChartLineCompareMemoryUsageRun({
               tickMargin={8}
               tickCount={8}
               allowDecimals={false}
-              domain={["auto", "auto"]}
+              domain={useAutoDomain ? ["auto", "auto"] : undefined}
               tickFormatter={(value) => value.toLocaleString()}
               label={{
                 value: "Memory Usage (bytes)",

@@ -417,6 +417,37 @@ function MultipleRunCompare() {
 
   const bothMultipleUploaded = FAMultipleFile && EFAMultipleFile;
 
+  // Calculate percentage changes
+  const calculatePercentageChange = (
+    newValue: number,
+    originalValue: number,
+  ) => {
+    if (originalValue === 0) return 0; // Avoid division by zero
+    return ((newValue - originalValue) / originalValue) * 100;
+  };
+
+  let percentageChanges = null;
+  if (bothMultipleUploaded) {
+    const fitnessChange = calculatePercentageChange(
+      EFAMultipleFile.result.fitnessMaximization.average,
+      FAMultipleFile.result.fitnessMaximization.average,
+    );
+    const executionTimeChange = calculatePercentageChange(
+      EFAMultipleFile.result.executionTime.average,
+      FAMultipleFile.result.executionTime.average,
+    );
+    const memoryChange = calculatePercentageChange(
+      EFAMultipleFile.result.memory.average,
+      FAMultipleFile.result.memory.average,
+    );
+
+    percentageChanges = {
+      fitness: fitnessChange,
+      executionTime: executionTimeChange,
+      memory: memoryChange,
+    };
+  }
+
   return (
     <div className="space-y-6">
       {(FAMultipleFile || EFAMultipleFile) && (
@@ -723,6 +754,61 @@ function MultipleRunCompare() {
               </CardContent>
             </Card>
           </div>
+
+          {percentageChanges && (
+            <Card className="mx-24">
+              <CardHeader>
+                <CardTitle className="text-base">
+                  Percentage Change (EFA vs FA)
+                </CardTitle>
+                <CardDescription>
+                  Percentage change in average metrics for EFA compared to FA
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="mb-2 font-semibold">
+                    Average Metrics Comparison
+                  </h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Fitness Score
+                      </span>
+                      <span
+                        className={`font-medium ${percentageChanges.fitness >= 0 ? "text-green-500" : "text-red-500"}`}
+                      >
+                        {percentageChanges.fitness >= 0 ? "+" : ""}
+                        {percentageChanges.fitness.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Execution Time
+                      </span>
+                      <span
+                        className={`font-medium ${percentageChanges.executionTime >= 0 ? "text-green-500" : "text-red-500"}`}
+                      >
+                        {percentageChanges.executionTime >= 0 ? "+" : ""}
+                        {percentageChanges.executionTime.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Memory Usage
+                      </span>
+                      <span
+                        className={`font-medium ${percentageChanges.memory >= 0 ? "text-green-500" : "text-red-500"}`}
+                      >
+                        {percentageChanges.memory >= 0 ? "+" : ""}
+                        {percentageChanges.memory.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="mx-24 space-y-6">
             <ChartLineCompareFitnessRun
