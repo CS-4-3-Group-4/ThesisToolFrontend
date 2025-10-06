@@ -48,6 +48,7 @@ const DEFAULT_PARAMS: SimulationParams = {
   alphaFinal: 0.05,
   beta0: 1.0,
   gamma: 1.0,
+  betaMin: 0.2, // Default for EFA
 };
 
 const REFETCH_INTERVAL_MS = 200;
@@ -523,6 +524,7 @@ function App() {
                 isRunning={isRunning || isStarting}
                 onParamChange={handleParamChange}
                 onResetParams={handleResetParams}
+                algorithmMode={algorithmMode}
               />
             </TabsContent>
 

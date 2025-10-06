@@ -43,14 +43,18 @@ async function postStopFA() {
 }
 
 async function postSingleRunFA(params: SimulationParams) {
-  await ax.post("/fa/single/run", params);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { betaMin: _, ...faParams } = params;
+  await ax.post("/fa/single/run", faParams);
 }
 
 async function postMultipleRunFA(payload: {
   params: SimulationParams;
   numRuns: number;
 }) {
-  await ax.post(`/fa/multiple/run?runs=${payload.numRuns}`, payload.params);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { betaMin: _, ...faParams } = payload.params;
+  await ax.post(`/fa/multiple/run?runs=${payload.numRuns}`, faParams);
 }
 
 export const iterationsFAQueryOptions = () =>

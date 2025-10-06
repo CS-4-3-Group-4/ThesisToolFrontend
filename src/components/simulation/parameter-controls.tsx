@@ -11,11 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
-import type { SimulationParams } from "@/types";
+import type { AlgorithmMode, SimulationParams } from "@/types";
 
 interface ParameterControlsProps {
   params: SimulationParams;
   isRunning: boolean;
+  algorithmMode: AlgorithmMode;
   onParamChange: (key: keyof SimulationParams, value: number) => void;
   onResetParams: () => void;
 }
@@ -23,9 +24,12 @@ interface ParameterControlsProps {
 export function ParameterControls({
   params,
   isRunning,
+  algorithmMode,
   onParamChange,
   onResetParams,
 }: ParameterControlsProps) {
+  const showBetaMin = algorithmMode === "extended" || algorithmMode === "both";
+
   return (
     <div className="space-y-6">
       {onResetParams && (
@@ -134,6 +138,31 @@ export function ParameterControls({
                 disabled={isRunning}
               />
             </div>
+
+            {showBetaMin && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="betaMin">
+                    Beta Min - Minimum Attractiveness
+                  </Label>
+                  <span className="text-muted-foreground font-mono text-sm">
+                    {(params.betaMin ?? 0.2).toFixed(2)}
+                  </span>
+                </div>
+                <Slider
+                  id="betaMin"
+                  min={0.1}
+                  max={10.0}
+                  step={0.05}
+                  value={[params.betaMin ?? 0.2]}
+                  onValueChange={([value]) => onParamChange("betaMin", value)}
+                  disabled={isRunning}
+                />
+                <p className="text-muted-foreground text-xs">
+                  Only used by Extended FA (EFA)
+                </p>
+              </div>
+            )}
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
