@@ -94,9 +94,10 @@ export function FAQDialog() {
                 How generalizable is your Extended Firefly Algorithm—could it be applied to optimization problems beyond flood personnel allocation?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                The Extended FA is designed as a general-purpose optimization algorithm. While it was
-                tested in the context of flood personnel allocation, its structure allows it to be
-                applied to other resource allocation and optimization problems with similar characteristics.
+                The current implementation of the Extended FA is built specifically for a resource allocation
+                problem. In that regard, it is not bounded by the selected disaster scenario for this study,
+                which are flood scenarios, and can be applied in other contexts that mirror the methodology
+                used in the study.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
