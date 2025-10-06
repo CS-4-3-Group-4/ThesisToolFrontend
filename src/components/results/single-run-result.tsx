@@ -309,7 +309,7 @@ export function SingleRunResult({
                 </TableBody>
               </Table>
             </ScrollArea>
-            <div className="bg-muted/50 border-t px-4 py-3">
+            {/* <div className="bg-muted/50 border-t px-4 py-3">
               <div className="flex items-center justify-between text-sm font-semibold">
                 <span>Total Personnel</span>
                 <div className="flex gap-8">
@@ -333,7 +333,7 @@ export function SingleRunResult({
                   </span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
