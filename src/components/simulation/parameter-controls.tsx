@@ -28,7 +28,7 @@ export function ParameterControls({
   onParamChange,
   onResetParams,
 }: ParameterControlsProps) {
-  const showBetaMin = algorithmMode === "extended" || algorithmMode === "both";
+  const showBetaMin = algorithmMode === "extended";
 
   return (
     <div className="space-y-6">

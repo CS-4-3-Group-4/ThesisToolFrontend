@@ -33,9 +33,7 @@ export function AlgorithmSelector({
     <Card>
       <CardHeader>
         <CardTitle>Algorithm Selection</CardTitle>
-        <CardDescription>
-          Choose which algorithm(s) to run and compare
-        </CardDescription>
+        <CardDescription>Choose which algorithm to run</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
@@ -53,9 +51,8 @@ export function AlgorithmSelector({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="original">Original FA Only</SelectItem>
-              <SelectItem value="extended">Extended FA Only</SelectItem>
-              <SelectItem value="both">Both (Comparison Mode)</SelectItem>
+              <SelectItem value="original">Original FA</SelectItem>
+              <SelectItem value="extended">Extended FA</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex gap-2">
