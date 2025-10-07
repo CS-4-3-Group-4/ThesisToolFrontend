@@ -38,7 +38,7 @@ function HeaderTitle() {
       </div>
       <div>
         <h1 className="text-4xl font-bold tracking-tight text-balance">
-          Firefly Algorithm Simulator
+          Firefly Algorithm Workbench
         </h1>
         <p className="text-muted-foreground text-sm text-pretty">
           Advanced optimization algorithm comparison platform
