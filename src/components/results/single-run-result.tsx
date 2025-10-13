@@ -340,6 +340,31 @@ export function SingleRunResult({
               </Table>
             </ScrollArea>
           </div>
+          <div className="bg-muted/50 border-t px-4 py-3">
+            <div className="flex items-center justify-between text-sm font-semibold">
+              <span>Total Personnel</span>
+              <div className="flex gap-8">
+                <span>
+                  SAR:{" "}
+                  {allocations.reduce(
+                    (sum, alloc) => sum + alloc.personnel.SAR,
+                    0,
+                  )}
+                </span>
+                <span>
+                  EMS:{" "}
+                  {allocations.reduce(
+                    (sum, alloc) => sum + alloc.personnel.EMS,
+                    0,
+                  )}
+                </span>
+                <span className="text-primary">
+                  Total:{" "}
+                  {allocations.reduce((sum, alloc) => sum + alloc.total, 0)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Resource Flows */}
