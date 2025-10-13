@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
-import { Zap, Database } from "lucide-react";
+import { Database } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { HowToGuideDialog } from "../dialogs/how-to-guide-dialog";
 import { FAQDialog } from "../dialogs/faq-dialog";
+import fireflySvg from "@/assets/firefly.svg";
 
 interface SimulationHeaderProps {
   apiStatus: "connected" | "disconnected" | "checking";
@@ -33,9 +34,14 @@ export function SimulationHeader({ apiStatus }: SimulationHeaderProps) {
 function HeaderTitle() {
   return (
     <div className="flex items-center gap-3">
-      <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg">
-        <Zap className="text-primary h-6 w-6" />
-      </div>
+      <img
+        src={fireflySvg}
+        alt="Firefly Algorithm Logo"
+        className="h-16 w-16 rounded-lg"
+      />
+      {/* <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg"> */}
+      {/* <Zap className="text-primary h-6 w-6" /> */}
+      {/* </div> */}
       <div>
         <h1 className="text-4xl font-bold tracking-tight text-balance">
           Firefly Algorithm Workbench
