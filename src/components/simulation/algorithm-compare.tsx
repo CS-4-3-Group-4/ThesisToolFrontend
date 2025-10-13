@@ -422,8 +422,22 @@ function MultipleRunCompare() {
     newValue: number,
     originalValue: number,
   ) => {
-    if (originalValue === 0) return 0; // Avoid division by zero
+    if (originalValue === 0) return 0;
     return ((newValue - originalValue) / originalValue) * 100;
+  };
+
+  // Determine color based on metric type and change direction
+  const getChangeColor = (
+    percentChange: number,
+    metric: "fitness" | "time" | "memory",
+  ): string => {
+    if (metric === "fitness") {
+      // For fitness: positive change is good (green), negative is bad (red)
+      return percentChange >= 0 ? "text-green-500" : "text-red-500";
+    } else {
+      // For time and memory: negative change is good (green), positive is bad (red)
+      return percentChange <= 0 ? "text-green-500" : "text-red-500";
+    }
   };
 
   let percentageChanges = null;
@@ -776,7 +790,7 @@ function MultipleRunCompare() {
                         Fitness Score
                       </span>
                       <span
-                        className={`font-medium ${percentageChanges.fitness >= 0 ? "text-green-500" : "text-red-500"}`}
+                        className={`font-medium ${getChangeColor(percentageChanges.fitness, "fitness")}`}
                       >
                         {percentageChanges.fitness >= 0 ? "+" : ""}
                         {percentageChanges.fitness.toFixed(2)}%
@@ -787,7 +801,7 @@ function MultipleRunCompare() {
                         Execution Time
                       </span>
                       <span
-                        className={`font-medium ${percentageChanges.executionTime >= 0 ? "text-green-500" : "text-red-500"}`}
+                        className={`font-medium ${getChangeColor(percentageChanges.executionTime, "time")}`}
                       >
                         {percentageChanges.executionTime >= 0 ? "+" : ""}
                         {percentageChanges.executionTime.toFixed(2)}%
@@ -798,7 +812,7 @@ function MultipleRunCompare() {
                         Memory Usage
                       </span>
                       <span
-                        className={`font-medium ${percentageChanges.memory >= 0 ? "text-green-500" : "text-red-500"}`}
+                        className={`font-medium ${getChangeColor(percentageChanges.memory, "memory")}`}
                       >
                         {percentageChanges.memory >= 0 ? "+" : ""}
                         {percentageChanges.memory.toFixed(2)}%
