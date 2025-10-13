@@ -10,7 +10,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
 import { BookOpen } from "lucide-react";
 
-
 export function HowToGuideDialog() {
   return (
     <Dialog>
@@ -24,10 +23,10 @@ export function HowToGuideDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <BookOpen className="h-5 w-5" />
-            How to Use the Simulator
+            How to Use the Workbench
           </DialogTitle>
           <DialogDescription>
-            Step-by-step guide to using the Firefly Algorithm Simulator
+            Step-by-step guide to using the Firefly Algorithm Workbench
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh] pr-4">
