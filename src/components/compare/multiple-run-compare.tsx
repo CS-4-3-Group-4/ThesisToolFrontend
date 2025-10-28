@@ -12,13 +12,26 @@ import {
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone";
 import { Button } from "@/components/ui/button";
-import { UploadIcon, CheckCircle2, AlertTriangle } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  UploadIcon,
+  CheckCircle2,
+  AlertTriangle,
+  Download,
+  FileSpreadsheet,
+} from "lucide-react";
 import type { MultipleRunResult } from "@/types";
 import {
   ChartLineCompareFitnessRun,
   ChartLineCompareExecutionTimeRun,
   ChartLineCompareMemoryUsageRun,
 } from "../charts/chart-line-compare-runs";
+import { json2csv } from "json-2-csv";
 
 export interface MultipleRunFile {
   algorithm: string;
@@ -88,6 +101,66 @@ export function MultipleRunCompare() {
   };
 
   const bothMultipleUploaded = FAMultipleFile && EFAMultipleFile;
+
+  // Export comparison data
+  const exportComparisonData = (
+    metric: "fitness" | "executionTime" | "memory",
+  ) => {
+    if (!FAMultipleFile || !EFAMultipleFile) return;
+
+    const faRuns = FAMultipleFile.result.runs;
+    const efaRuns = EFAMultipleFile.result.runs;
+    const maxLength = Math.max(faRuns.length, efaRuns.length);
+
+    let data: Array<{ [key: string]: number | string }> = [];
+    let metricLabel = "";
+    let faKey = "";
+    let efaKey = "";
+
+    switch (metric) {
+      case "fitness":
+        metricLabel = "Fitness Score";
+        faKey = `FA (${metricLabel})`;
+        efaKey = `EFA (${metricLabel})`;
+        data = Array.from({ length: maxLength }, (_, i) => ({
+          [faKey]: faRuns[i]?.fitnessMaximization.toFixed(6) || "",
+          [efaKey]: efaRuns[i]?.fitnessMaximization.toFixed(6) || "",
+        }));
+        break;
+      case "executionTime":
+        metricLabel = "Execution Time (ms)";
+        faKey = `FA (${metricLabel})`;
+        efaKey = `EFA (${metricLabel})`;
+        data = Array.from({ length: maxLength }, (_, i) => ({
+          [faKey]: faRuns[i]?.executionTimeMs.toFixed(2) || "",
+          [efaKey]: efaRuns[i]?.executionTimeMs.toFixed(2) || "",
+        }));
+        break;
+      case "memory":
+        metricLabel = "Memory Usage (bytes)";
+        faKey = `FA (${metricLabel})`;
+        efaKey = `EFA (${metricLabel})`;
+        data = Array.from({ length: maxLength }, (_, i) => ({
+          [faKey]: faRuns[i]?.memoryBytes?.toString() || "",
+          [efaKey]: efaRuns[i]?.memoryBytes?.toString() || "",
+        }));
+        break;
+    }
+
+    const csvContent = json2csv(data, {
+      excelBOM: true,
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `FA-vs-EFA-${metric}-comparison-${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   // Calculate percentage changes
   const calculatePercentageChange = (
@@ -255,6 +328,34 @@ export function MultipleRunCompare() {
                 Statistical comparison across multiple runs
               </p>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Comparison
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => exportComparisonData("fitness")}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export Fitness Score
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => exportComparisonData("executionTime")}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export Execution Time
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => exportComparisonData("memory")}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export Memory Usage
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
