@@ -113,8 +113,11 @@ export function ParameterControls({
         <Card className="bg-muted/50">
           <CardContent className="pt-1">
             <p className="text-muted-foreground text-center text-sm">
-              Parameter tuning is currently disabled for the study. Default
-              values are being used.
+              For the thesis experiment and evaluation runs, parameter tuning
+              has been disabled. The system now uses a finalized and locked
+              hyperparameter set to ensure consistency in the official results.
+              Any controls for parameter adjustment are available only for
+              demonstration or exploratory purposes.
             </p>
           </CardContent>
         </Card>
