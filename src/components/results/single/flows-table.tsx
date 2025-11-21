@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -15,7 +16,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, FileSpreadsheet, FileJson } from "lucide-react";
+import {
+  Download,
+  FileSpreadsheet,
+  FileJson,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { json2csv } from "json-2-csv";
 import type { Flow } from "@/types";
 
@@ -24,7 +32,59 @@ interface FlowsTableProps {
   algorithmName: string;
 }
 
+type SortField = "classId" | "fromName" | "toName" | "amount";
+type SortDirection = "asc" | "desc" | null;
+
 export function FlowsTable({ flows, algorithmName }: FlowsTableProps) {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  // Handle sorting
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortField(null);
+      }
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Sort flows
+  const sortedFlows = [...flows].sort((a, b) => {
+    if (!sortField || !sortDirection) return 0;
+
+    const aVal: string | number = a[sortField];
+    const bVal: string | number = b[sortField];
+
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      return sortDirection === "asc"
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+
+    return sortDirection === "asc"
+      ? (aVal as number) - (bVal as number)
+      : (bVal as number) - (aVal as number);
+  });
+
+  // Get sort icon for column
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
   // Export flows
   const exportFlows = (format: "csv" | "json") => {
     let content: string;
@@ -32,13 +92,13 @@ export function FlowsTable({ flows, algorithmName }: FlowsTableProps) {
     let filename: string;
 
     if (format === "csv") {
-      content = json2csv(flows, {
+      content = json2csv(sortedFlows, {
         excelBOM: true,
       });
       mimeType = "text/csv";
       filename = `${algorithmName}-flows.csv`;
     } else {
-      content = JSON.stringify(flows, null, 2);
+      content = JSON.stringify(sortedFlows, null, 2);
       mimeType = "application/json";
       filename = `${algorithmName}-flows.json`;
     }
@@ -90,14 +150,46 @@ export function FlowsTable({ flows, algorithmName }: FlowsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead>From</TableHead>
-              <TableHead>To</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>
+                <button
+                  className="hover:text-foreground flex items-center"
+                  onClick={() => handleSort("classId")}
+                >
+                  Type
+                  {getSortIcon("classId")}
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  className="hover:text-foreground flex items-center"
+                  onClick={() => handleSort("fromName")}
+                >
+                  From
+                  {getSortIcon("fromName")}
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  className="hover:text-foreground flex items-center"
+                  onClick={() => handleSort("toName")}
+                >
+                  To
+                  {getSortIcon("toName")}
+                </button>
+              </TableHead>
+              <TableHead className="text-right">
+                <button
+                  className="hover:text-foreground ml-auto flex items-center"
+                  onClick={() => handleSort("amount")}
+                >
+                  Amount
+                  {getSortIcon("amount")}
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {flows.map((flow, idx) => (
+            {sortedFlows.map((flow, idx) => (
               <TableRow key={idx}>
                 <TableCell>
                   <Badge

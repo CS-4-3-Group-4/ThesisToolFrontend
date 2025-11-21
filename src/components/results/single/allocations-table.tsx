@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,7 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, FileSpreadsheet, FileJson } from "lucide-react";
+import {
+  Download,
+  FileSpreadsheet,
+  FileJson,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { json2csv } from "json-2-csv";
 import type { Allocation } from "@/types";
 
@@ -23,13 +31,79 @@ interface AllocationTableProps {
   algorithmName: string;
 }
 
+type SortField = "name" | "SAR" | "EMS" | "total";
+type SortDirection = "asc" | "desc" | null;
+
 export function AllocationTable({
   allocations,
   algorithmName,
 }: AllocationTableProps) {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  // Handle sorting
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortField(null);
+      }
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Sort allocations
+  const sortedAllocations = [...allocations].sort((a, b) => {
+    if (!sortField || !sortDirection) return 0;
+
+    let aVal: string | number;
+    let bVal: string | number;
+
+    if (sortField === "name") {
+      aVal = a.name;
+      bVal = b.name;
+    } else if (sortField === "SAR") {
+      aVal = a.personnel.SAR;
+      bVal = b.personnel.SAR;
+    } else if (sortField === "EMS") {
+      aVal = a.personnel.EMS;
+      bVal = b.personnel.EMS;
+    } else {
+      aVal = a.total;
+      bVal = b.total;
+    }
+
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      return sortDirection === "asc"
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+
+    return sortDirection === "asc"
+      ? (aVal as number) - (bVal as number)
+      : (bVal as number) - (aVal as number);
+  });
+
+  // Get sort icon for column
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
   // Flatten allocations for cleaner CSV export (removes nested personnel object)
   const flattenAllocations = () => {
-    return allocations.map((alloc) => ({
+    return sortedAllocations.map((alloc) => ({
       id: alloc.id,
       name: alloc.name,
       SAR: alloc.personnel.SAR,
@@ -120,14 +194,46 @@ export function AllocationTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Barangay</TableHead>
-                <TableHead className="text-right">SAR</TableHead>
-                <TableHead className="text-right">EMS</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead>
+                  <button
+                    className="hover:text-foreground flex items-center"
+                    onClick={() => handleSort("name")}
+                  >
+                    Barangay
+                    {getSortIcon("name")}
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <button
+                    className="hover:text-foreground ml-auto flex items-center"
+                    onClick={() => handleSort("SAR")}
+                  >
+                    SAR
+                    {getSortIcon("SAR")}
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <button
+                    className="hover:text-foreground ml-auto flex items-center"
+                    onClick={() => handleSort("EMS")}
+                  >
+                    EMS
+                    {getSortIcon("EMS")}
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <button
+                    className="hover:text-foreground ml-auto flex items-center"
+                    onClick={() => handleSort("total")}
+                  >
+                    Total
+                    {getSortIcon("total")}
+                  </button>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allocations.map((alloc) => (
+              {sortedAllocations.map((alloc) => (
                 <TableRow key={alloc.id}>
                   <TableCell className="font-medium">{alloc.name}</TableCell>
                   <TableCell className="text-right">

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,7 +17,14 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Download, FileSpreadsheet, FileJson } from "lucide-react";
+import {
+  Download,
+  FileSpreadsheet,
+  FileJson,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { json2csv } from "json-2-csv";
 import type { ValidationReport } from "@/types";
 
@@ -25,10 +33,87 @@ interface ValidationTableProps {
   algorithmName: string;
 }
 
+type SortField =
+  | "barangayName"
+  | "population"
+  | "hazardLevel"
+  | "idealTotal"
+  | "actualTotal"
+  | "populationScore"
+  | "populationCloseness"
+  | "sarCloseness"
+  | "emsCloseness"
+  | "hazardCloseness"
+  | "combinedScore";
+
+type SortDirection = "asc" | "desc" | null;
+
 export function ValidationTable({
   validationReport,
   algorithmName,
 }: ValidationTableProps) {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  // Handle sorting
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortField(null);
+      }
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Sort validations
+  const sortedValidations = [...validationReport.barangayValidations].sort(
+    (a, b) => {
+      if (!sortField || !sortDirection) return 0;
+
+      let aVal: string | number = a[sortField];
+      let bVal: string | number = b[sortField];
+
+      // Special handling for hazard level
+      if (sortField === "hazardLevel") {
+        const hazardOrder = { low: 1, medium: 2, high: 3 };
+        aVal =
+          hazardOrder[String(aVal).toLowerCase() as keyof typeof hazardOrder] ||
+          0;
+        bVal =
+          hazardOrder[String(bVal).toLowerCase() as keyof typeof hazardOrder] ||
+          0;
+      }
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortDirection === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+
+      return sortDirection === "asc"
+        ? (aVal as number) - (bVal as number)
+        : (bVal as number) - (aVal as number);
+    },
+  );
+
+  // Get sort icon for column
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
   // Export validation data
   const exportValidation = (format: "csv" | "json") => {
     let content: string;
@@ -36,13 +121,17 @@ export function ValidationTable({
     let filename: string;
 
     if (format === "csv") {
-      content = json2csv(validationReport.barangayValidations, {
+      content = json2csv(sortedValidations, {
         excelBOM: true,
       });
       mimeType = "text/csv";
       filename = `${algorithmName}-validation.csv`;
     } else {
-      content = JSON.stringify(validationReport, null, 2);
+      content = JSON.stringify(
+        { ...validationReport, barangayValidations: sortedValidations },
+        null,
+        2,
+      );
       mimeType = "application/json";
       filename = `${algorithmName}-validation.json`;
     }
@@ -172,25 +261,109 @@ export function ValidationTable({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Barangay</TableHead>
-                  <TableHead className="text-center">Population</TableHead>
-                  <TableHead className="text-center">Hazard</TableHead>
-                  <TableHead className="text-right">Ideal Total</TableHead>
-                  <TableHead className="text-right">Actual Total</TableHead>
-                  <TableHead className="text-right">Population Score</TableHead>
-                  <TableHead className="text-right">
-                    Population Closeness
+                  <TableHead>
+                    <button
+                      className="hover:text-foreground flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("barangayName")}
+                    >
+                      Barangay
+                      {getSortIcon("barangayName")}
+                    </button>
                   </TableHead>
-                  <TableHead className="text-right">SAR Closeness</TableHead>
-                  <TableHead className="text-right">EMS Closeness</TableHead>
-                  <TableHead className="text-right">Hazard Closeness</TableHead>
+                  <TableHead className="text-center">
+                    <button
+                      className="hover:text-foreground mx-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("population")}
+                    >
+                      Population
+                      {getSortIcon("population")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <button
+                      className="hover:text-foreground mx-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("hazardLevel")}
+                    >
+                      Hazard
+                      {getSortIcon("hazardLevel")}
+                    </button>
+                  </TableHead>
                   <TableHead className="text-right">
-                    Combined Closeness
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("idealTotal")}
+                    >
+                      Ideal Total
+                      {getSortIcon("idealTotal")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("actualTotal")}
+                    >
+                      Actual Total
+                      {getSortIcon("actualTotal")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("populationScore")}
+                    >
+                      Population Score
+                      {getSortIcon("populationScore")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("populationCloseness")}
+                    >
+                      Population Closeness
+                      {getSortIcon("populationCloseness")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("sarCloseness")}
+                    >
+                      SAR Closeness
+                      {getSortIcon("sarCloseness")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("emsCloseness")}
+                    >
+                      EMS Closeness
+                      {getSortIcon("emsCloseness")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("hazardCloseness")}
+                    >
+                      Hazard Closeness
+                      {getSortIcon("hazardCloseness")}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <button
+                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
+                      onClick={() => handleSort("combinedScore")}
+                    >
+                      Combined Closeness
+                      {getSortIcon("combinedScore")}
+                    </button>
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {validationReport.barangayValidations.map((v) => (
+                {sortedValidations.map((v) => (
                   <TableRow key={v.barangayId}>
                     <TableCell className="font-medium">
                       {v.barangayName}
