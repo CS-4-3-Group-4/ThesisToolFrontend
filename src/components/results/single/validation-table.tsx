@@ -44,7 +44,7 @@ type SortField =
   | "sarCloseness"
   | "emsCloseness"
   | "hazardCloseness"
-  | "combinedScore";
+  | "combinedCloseness";
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -191,11 +191,17 @@ export function ValidationTable({
         <AlertDescription>
           <div className="space-y-3">
             <p className="text-sm">{validationReport.interpretation}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
               <div>
                 <p className="text-muted-foreground">Total Barangays</p>
                 <p className="font-semibold">
                   {validationReport.overallStats.totalBarangays}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Avg Population Score</p>
+                <p className="font-semibold">
+                  {validationReport.overallStats.averagePopulationScore}
                 </p>
               </div>
               <div>
@@ -220,10 +226,10 @@ export function ValidationTable({
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Combined Score</p>
+                <p className="text-muted-foreground">Avg Combined Closeness</p>
                 <p className="font-semibold">
                   {(
-                    validationReport.overallStats.averageCombinedScore * 100
+                    validationReport.overallStats.averageCombinedCloseness * 100
                   ).toFixed(2)}
                   %
                 </p>
@@ -354,10 +360,10 @@ export function ValidationTable({
                   <TableHead className="text-right">
                     <button
                       className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
-                      onClick={() => handleSort("combinedScore")}
+                      onClick={() => handleSort("combinedCloseness")}
                     >
                       Combined Closeness
-                      {getSortIcon("combinedScore")}
+                      {getSortIcon("combinedCloseness")}
                     </button>
                   </TableHead>
                 </TableRow>
@@ -404,7 +410,7 @@ export function ValidationTable({
                       {(v.hazardCloseness * 100).toFixed(2)}%
                     </TableCell>
                     <TableCell className="text-right">
-                      {(v.combinedScore * 100).toFixed(2)}%
+                      {(v.combinedCloseness * 100).toFixed(2)}%
                     </TableCell>
                   </TableRow>
                 ))}

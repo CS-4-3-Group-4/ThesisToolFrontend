@@ -138,15 +138,16 @@ export interface BarangayValidation {
   sarCloseness: number;
   emsCloseness: number;
   hazardCloseness: number;
-  combinedScore: number;
+  combinedCloseness: number;
   populationScore: number;
 }
 
 export interface OverallStats {
   totalBarangays: number;
+  averagePopulationScore: number;
   averagePopulationCloseness: number;
   averageHazardCloseness: number;
-  averageCombinedScore: number;
+  averageCombinedCloseness: number;
   qualityRating: string;
 }
 
@@ -155,7 +156,6 @@ export interface ValidationReport {
   baseline: string;
   barangayValidations: BarangayValidation[];
   overallStats: OverallStats;
-  multiRunStats: null;
   interpretation: string;
   error: string | null;
   timestamp: number;
@@ -165,5 +165,3 @@ export interface ValidationReport {
 export interface ValidationReportResponse {
   validationReport: ValidationReport;
 }
-
-
