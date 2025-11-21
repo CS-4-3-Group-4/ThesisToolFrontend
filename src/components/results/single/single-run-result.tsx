@@ -20,7 +20,7 @@ import type {
   Allocation,
   Flow,
   SingleRunResult,
-  ValidationReport,
+  ValidationReportSingle,
 } from "@/types";
 import { ValidationTable } from "./validation-table";
 
@@ -28,7 +28,7 @@ interface SingleRunResultProps {
   result: SingleRunResult;
   allocations: Allocation[];
   flows: Flow[];
-  validationReport: ValidationReport;
+  validationReportSingle: ValidationReportSingle;
   algorithmMode: AlgorithmMode;
   iterations: Array<{ iteration: number; fitness: number }>;
 }
@@ -37,7 +37,7 @@ export function SingleRunResult({
   result,
   allocations,
   flows,
-  validationReport,
+  validationReportSingle,
   algorithmMode,
   iterations,
 }: SingleRunResultProps) {
@@ -234,7 +234,7 @@ export function SingleRunResult({
         <FlowsTable flows={flows} algorithmName={algorithmName} />
 
         <ValidationTable
-          validationReport={validationReport}
+          validationReportSingle={validationReportSingle}
           algorithmName={algorithmName}
         />
       </CardContent>

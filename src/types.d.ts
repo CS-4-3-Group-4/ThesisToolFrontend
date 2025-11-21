@@ -151,7 +151,7 @@ export interface OverallStats {
   qualityRating: string;
 }
 
-export interface ValidationReport {
+export interface ValidationReportSingle {
   standard: string;
   baseline: string;
   barangayValidations: BarangayValidation[];
@@ -162,6 +162,6 @@ export interface ValidationReport {
   multiRun: boolean;
 }
 
-export interface ValidationReportResponse {
-  validationReport: ValidationReport;
+export interface ValidationReportSingleResponse {
+  validationReport: ValidationReportSingle;
 }

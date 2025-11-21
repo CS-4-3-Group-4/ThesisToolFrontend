@@ -26,10 +26,10 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { json2csv } from "json-2-csv";
-import type { ValidationReport } from "@/types";
+import type { ValidationReportSingle } from "@/types";
 
 interface ValidationTableProps {
-  validationReport: ValidationReport;
+  validationReportSingle: ValidationReportSingle;
   algorithmName: string;
 }
 
@@ -49,7 +49,7 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export function ValidationTable({
-  validationReport,
+  validationReportSingle,
   algorithmName,
 }: ValidationTableProps) {
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -72,35 +72,35 @@ export function ValidationTable({
   };
 
   // Sort validations
-  const sortedValidations = [...validationReport.barangayValidations].sort(
-    (a, b) => {
-      if (!sortField || !sortDirection) return 0;
+  const sortedValidations = [
+    ...validationReportSingle.barangayValidations,
+  ].sort((a, b) => {
+    if (!sortField || !sortDirection) return 0;
 
-      let aVal: string | number = a[sortField];
-      let bVal: string | number = b[sortField];
+    let aVal: string | number = a[sortField];
+    let bVal: string | number = b[sortField];
 
-      // Special handling for hazard level
-      if (sortField === "hazardLevel") {
-        const hazardOrder = { low: 1, medium: 2, high: 3 };
-        aVal =
-          hazardOrder[String(aVal).toLowerCase() as keyof typeof hazardOrder] ||
-          0;
-        bVal =
-          hazardOrder[String(bVal).toLowerCase() as keyof typeof hazardOrder] ||
-          0;
-      }
+    // Special handling for hazard level
+    if (sortField === "hazardLevel") {
+      const hazardOrder = { low: 1, medium: 2, high: 3 };
+      aVal =
+        hazardOrder[String(aVal).toLowerCase() as keyof typeof hazardOrder] ||
+        0;
+      bVal =
+        hazardOrder[String(bVal).toLowerCase() as keyof typeof hazardOrder] ||
+        0;
+    }
 
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortDirection === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
-      }
-
+    if (typeof aVal === "string" && typeof bVal === "string") {
       return sortDirection === "asc"
-        ? (aVal as number) - (bVal as number)
-        : (bVal as number) - (aVal as number);
-    },
-  );
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+
+    return sortDirection === "asc"
+      ? (aVal as number) - (bVal as number)
+      : (bVal as number) - (aVal as number);
+  });
 
   // Get sort icon for column
   const getSortIcon = (field: SortField) => {
@@ -128,7 +128,7 @@ export function ValidationTable({
       filename = `${algorithmName}-validation.csv`;
     } else {
       content = JSON.stringify(
-        { ...validationReport, barangayValidations: sortedValidations },
+        { ...validationReportSingle, barangayValidations: sortedValidations },
         null,
         2,
       );
@@ -179,29 +179,29 @@ export function ValidationTable({
       {/* Overall Stats Card */}
       <Alert>
         <AlertTitle className="mb-2 flex items-center gap-2">
-          Validation Report - {validationReport.standard}
+          Validation Report - {validationReportSingle.standard}
           <Badge
             variant={getQualityBadgeVariant(
-              validationReport.overallStats.qualityRating,
+              validationReportSingle.overallStats.qualityRating,
             )}
           >
-            {validationReport.overallStats.qualityRating}
+            {validationReportSingle.overallStats.qualityRating}
           </Badge>
         </AlertTitle>
         <AlertDescription>
           <div className="space-y-3">
-            <p className="text-sm">{validationReport.interpretation}</p>
+            <p className="text-sm">{validationReportSingle.interpretation}</p>
             <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
               <div>
                 <p className="text-muted-foreground">Total Barangays</p>
                 <p className="font-semibold">
-                  {validationReport.overallStats.totalBarangays}
+                  {validationReportSingle.overallStats.totalBarangays}
                 </p>
               </div>
               <div>
                 <p className="text-muted-foreground">Avg Population Score</p>
                 <p className="font-semibold">
-                  {validationReport.overallStats.averagePopulationScore}
+                  {validationReportSingle.overallStats.averagePopulationScore}
                 </p>
               </div>
               <div>
@@ -210,8 +210,8 @@ export function ValidationTable({
                 </p>
                 <p className="font-semibold">
                   {(
-                    validationReport.overallStats.averagePopulationCloseness *
-                    100
+                    validationReportSingle.overallStats
+                      .averagePopulationCloseness * 100
                   ).toFixed(2)}
                   %
                 </p>
@@ -220,7 +220,8 @@ export function ValidationTable({
                 <p className="text-muted-foreground">Avg Hazard Closeness</p>
                 <p className="font-semibold">
                   {(
-                    validationReport.overallStats.averageHazardCloseness * 100
+                    validationReportSingle.overallStats.averageHazardCloseness *
+                    100
                   ).toFixed(2)}
                   %
                 </p>
@@ -229,7 +230,8 @@ export function ValidationTable({
                 <p className="text-muted-foreground">Avg Combined Closeness</p>
                 <p className="font-semibold">
                   {(
-                    validationReport.overallStats.averageCombinedCloseness * 100
+                    validationReportSingle.overallStats
+                      .averageCombinedCloseness * 100
                   ).toFixed(2)}
                   %
                 </p>
@@ -420,7 +422,7 @@ export function ValidationTable({
           </ScrollArea>
         </div>
         <div className="bg-muted/50 text-muted-foreground border-t px-4 py-3 text-xs">
-          <strong>Baseline:</strong> {validationReport.baseline} |
+          <strong>Baseline:</strong> {validationReportSingle.baseline} |
           <strong className="ml-2">S</strong> = SAR Personnel,
           <strong className="ml-2">E</strong> = EMS Personnel
         </div>

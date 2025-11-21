@@ -30,7 +30,7 @@ import {
   resultsFAQueryOptions,
   allocationsFAQueryOptions,
   flowsFAQueryOptions,
-  validationReportFAQueryOptions,
+  validationReportSingleFAQueryOptions,
 } from "./queries/fa";
 import {
   startSingleRunEFAMutationOptions,
@@ -165,17 +165,19 @@ function App() {
   const flowsData = isFA ? flowsDataFA : flowsDataEFA;
   const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
 
-  const { data: validationReportDataFA, refetch: refetchValidationReportFA } =
-    useQuery({ ...validationReportFAQueryOptions(), enabled: false }); // Placeholder for validation report query
+  const {
+    data: validationReportSingleDataFA,
+    refetch: refetchValidationReportSingleFA,
+  } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false }); // Placeholder for validation report query
 
-  const refetchValidationReportEFA = () => {
+  const refetchValidationReportSingleEFA = () => {
     console.log("Test");
   };
 
-  const validationReportData = validationReportDataFA;
+  const validationReportData = validationReportSingleDataFA;
   const refetchValidationReport = isFA
-    ? refetchValidationReportFA
-    : refetchValidationReportEFA;
+    ? refetchValidationReportSingleFA
+    : refetchValidationReportSingleEFA;
 
   // FA mutations
   const { mutate: startSingleRunFA } = useMutation({
@@ -452,7 +454,7 @@ function App() {
           result={resultsData}
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
-          validationReport={validationReportData.validationReport}
+          validationReportSingle={validationReportData.validationReport}
           algorithmMode={algorithmMode}
           iterations={iterationsData.iterations}
         />
