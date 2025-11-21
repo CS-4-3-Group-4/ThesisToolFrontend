@@ -30,6 +30,7 @@ import {
   resultsFAQueryOptions,
   allocationsFAQueryOptions,
   flowsFAQueryOptions,
+  validationReportFAQueryOptions,
 } from "./queries/fa";
 import {
   startSingleRunEFAMutationOptions,
@@ -43,7 +44,7 @@ import {
 } from "./queries/efa";
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
-import { SingleRunResult } from "./components/results/single-run-result";
+import { SingleRunResult } from "./components/results/single/single-run-result";
 import { MultipleRunResult } from "./components/results/multiple-run-result";
 import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
 
@@ -164,6 +165,18 @@ function App() {
   const flowsData = isFA ? flowsDataFA : flowsDataEFA;
   const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
 
+  const { data: validationReportDataFA, refetch: refetchValidationReportFA } =
+    useQuery({ ...validationReportFAQueryOptions(), enabled: false }); // Placeholder for validation report query
+
+  const refetchValidationReportEFA = () => {
+    console.log("Test");
+  };
+
+  const validationReportData = validationReportDataFA;
+  const refetchValidationReport = isFA
+    ? refetchValidationReportFA
+    : refetchValidationReportEFA;
+
   // FA mutations
   const { mutate: startSingleRunFA } = useMutation({
     ...startSingleRunFAMutationOptions(),
@@ -278,6 +291,7 @@ function App() {
             refetchResults();
             refetchAllocations();
             refetchFlows();
+            refetchValidationReport();
           }
 
           // Fetch results data for multiple run mode
@@ -298,6 +312,7 @@ function App() {
     refetchResults,
     refetchAllocations,
     refetchFlows,
+    refetchValidationReport,
   ]);
 
   // Update fitness from iteration history (single run only)
@@ -429,6 +444,7 @@ function App() {
       iterationsData &&
       allocationsData &&
       flowsData &&
+      validationReportData &&
       "executionTimeMs" in resultsData
     ) {
       return (
@@ -436,6 +452,7 @@ function App() {
           result={resultsData}
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
+          validationReport={validationReportData.validationReport}
           algorithmMode={algorithmMode}
           iterations={iterationsData.iterations}
         />

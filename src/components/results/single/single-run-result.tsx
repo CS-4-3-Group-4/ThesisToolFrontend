@@ -6,44 +6,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Clock,
-  MemoryStick,
-  Info,
-  TrendingUp,
-  Download,
-  FileSpreadsheet,
-  FileJson,
-} from "lucide-react";
-import { json2csv } from "json-2-csv";
-import type { AlgorithmMode, Allocation, Flow, SingleRunResult } from "@/types";
+import { Clock, MemoryStick, Info, TrendingUp, Download } from "lucide-react";
+import { AllocationTable } from "./allocations-table";
+import { FlowsTable } from "./flows-table";
+import type {
+  AlgorithmMode,
+  Allocation,
+  Flow,
+  SingleRunResult,
+  ValidationReport,
+} from "@/types";
+import { ValidationTable } from "./validation-table";
 
 interface SingleRunResultProps {
   result: SingleRunResult;
   allocations: Allocation[];
   flows: Flow[];
+  validationReport: ValidationReport;
   algorithmMode: AlgorithmMode;
   iterations: Array<{ iteration: number; fitness: number }>;
 }
@@ -52,6 +37,7 @@ export function SingleRunResult({
   result,
   allocations,
   flows,
+  validationReport,
   algorithmMode,
   iterations,
 }: SingleRunResultProps) {
@@ -97,49 +83,6 @@ export function SingleRunResult({
     const content = JSON.stringify(completeData, null, 2);
     const filename = `${algorithmName}-complete-run-${Date.now()}.json`;
     downloadFile(content, filename, "application/json");
-  };
-
-  // Export allocations
-  const exportAllocations = (format: "csv" | "json") => {
-    const flattened = flattenAllocations();
-    let content: string;
-    let mimeType: string;
-    let filename: string;
-
-    if (format === "csv") {
-      content = json2csv(flattened, {
-        excelBOM: true,
-      });
-      mimeType = "text/csv";
-      filename = `${algorithmName}-allocations.csv`;
-    } else {
-      content = JSON.stringify(flattened, null, 2);
-      mimeType = "application/json";
-      filename = `${algorithmName}-allocations.json`;
-    }
-
-    downloadFile(content, filename, mimeType);
-  };
-
-  // Export flows
-  const exportFlows = (format: "csv" | "json") => {
-    let content: string;
-    let mimeType: string;
-    let filename: string;
-
-    if (format === "csv") {
-      content = json2csv(flows, {
-        excelBOM: true,
-      });
-      mimeType = "text/csv";
-      filename = `${algorithmName}-flows.csv`;
-    } else {
-      content = JSON.stringify(flows, null, 2);
-      mimeType = "application/json";
-      filename = `${algorithmName}-flows.json`;
-    }
-
-    downloadFile(content, filename, mimeType);
   };
 
   // Helper function to download file
@@ -283,146 +226,17 @@ export function SingleRunResult({
           </Card>
         </div>
 
-        {/* Allocations Table */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold">
-              Resource Allocations by Barangay
-            </h3>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportAllocations("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportAllocations("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="rounded-md border">
-            <ScrollArea className="h-[400px]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Barangay</TableHead>
-                    <TableHead className="text-right">SAR</TableHead>
-                    <TableHead className="text-right">EMS</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allocations.map((alloc) => (
-                    <TableRow key={alloc.id}>
-                      <TableCell className="font-medium">
-                        {alloc.name}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {alloc.personnel.SAR}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {alloc.personnel.EMS}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
-                        {alloc.total}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </div>
-          <div className="bg-muted/50 border-t px-4 py-3">
-            <div className="flex items-center justify-between text-sm font-semibold">
-              <span>Total Personnel</span>
-              <div className="flex gap-8">
-                <span>
-                  SAR:{" "}
-                  {allocations.reduce(
-                    (sum, alloc) => sum + alloc.personnel.SAR,
-                    0,
-                  )}
-                </span>
-                <span>
-                  EMS:{" "}
-                  {allocations.reduce(
-                    (sum, alloc) => sum + alloc.personnel.EMS,
-                    0,
-                  )}
-                </span>
-                <span className="text-primary">
-                  Total:{" "}
-                  {allocations.reduce((sum, alloc) => sum + alloc.total, 0)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AllocationTable
+          allocations={allocations}
+          algorithmName={algorithmName}
+        />
 
-        {/* Resource Flows */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Resource Flows</h3>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportFlows("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportFlows("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <ScrollArea className="h-[400px] rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead>To</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {flows.map((flow, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          flow.classId === "SAR" ? "default" : "secondary"
-                        }
-                      >
-                        {flow.classId}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{flow.fromName}</TableCell>
-                    <TableCell className="text-sm">{flow.toName}</TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {flow.amount}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
-        </div>
+        <FlowsTable flows={flows} algorithmName={algorithmName} />
+
+        <ValidationTable
+          validationReport={validationReport}
+          algorithmName={algorithmName}
+        />
       </CardContent>
     </Card>
   );

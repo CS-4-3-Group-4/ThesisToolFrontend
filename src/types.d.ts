@@ -120,3 +120,50 @@ export interface MultipleRunResult {
   }>;
   errors?: string[]; // Optional, only present if there are errors
 }
+
+//
+
+export interface BarangayValidation {
+  barangayId: string;
+  barangayName: string;
+  population: number;
+  hazardLevel: string;
+  idealTotal: number;
+  idealSAR: number;
+  idealEMS: number;
+  actualTotal: number;
+  actualSAR: number;
+  actualEMS: number;
+  populationCloseness: number;
+  sarCloseness: number;
+  emsCloseness: number;
+  hazardCloseness: number;
+  combinedScore: number;
+  populationScore: number;
+}
+
+export interface OverallStats {
+  totalBarangays: number;
+  averagePopulationCloseness: number;
+  averageHazardCloseness: number;
+  averageCombinedScore: number;
+  qualityRating: string;
+}
+
+export interface ValidationReport {
+  standard: string;
+  baseline: string;
+  barangayValidations: BarangayValidation[];
+  overallStats: OverallStats;
+  multiRunStats: null;
+  interpretation: string;
+  error: string | null;
+  timestamp: number;
+  multiRun: boolean;
+}
+
+export interface ValidationReportResponse {
+  validationReport: ValidationReport;
+}
+
+
