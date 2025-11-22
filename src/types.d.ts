@@ -159,9 +159,72 @@ export interface ValidationReportSingle {
   interpretation: string;
   error: string | null;
   timestamp: number;
-  multiRun: boolean;
 }
 
 export interface ValidationReportSingleResponse {
   validationReport: ValidationReportSingle;
+}
+
+export interface PerBarangayStat {
+  barangayId: string;
+  barangayName: string;
+  meanPopulationCloseness: number;
+  stdPopulationCloseness: number;
+  cvPopulationCloseness: number;
+  meanSarCloseness: number;
+  stdSarCloseness: number;
+  cvSarCloseness: number;
+  meanEmsCloseness: number;
+  stdEmsCloseness: number;
+  cvEmsCloseness: number;
+  meanHazardCloseness: number;
+  stdHazardCloseness: number;
+  cvHazardCloseness: number;
+  meanCombinedCloseness: number;
+  stdCombinedCloseness: number;
+  cvCombinedCloseness: number;
+}
+
+export interface ValidationReportMultiple {
+  meanPopulationCloseness: number;
+  meanSarCloseness: number;
+  meanEmsCloseness: number;
+  meanHazardCloseness: number;
+  meanCombinedCloseness: number;
+  meanPopulationScore: number;
+
+  stdPopulationCloseness: number;
+  stdSarCloseness: number;
+  stdEmsCloseness: number;
+  stdHazardCloseness: number;
+  stdCombinedCloseness: number;
+  stdPopulationScore: number;
+
+  minPopulationCloseness: number;
+  minSarCloseness: number;
+  minEmsCloseness: number;
+  minHazardCloseness: number;
+  minCombinedCloseness: number;
+  minPopulationScore: number;
+
+  maxPopulationCloseness: number;
+  maxSarCloseness: number;
+  maxEmsCloseness: number;
+  maxHazardCloseness: number;
+  maxCombinedCloseness: number;
+  maxPopulationScore: number;
+
+  cvPopulationCloseness: number;
+  cvSarCloseness: number;
+  cvEmsCloseness: number;
+  cvHazardCloseness: number;
+  cvCombinedCloseness: number;
+  cvPopulationScore: number;
+
+  individualRuns: ValidationReportSingle[];
+  perBarangayStats: PerBarangayStat[];
+}
+
+export interface ValidationReportMultipleResponse {
+  validationReport: ValidationReportMultiple;
 }

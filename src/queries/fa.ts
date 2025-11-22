@@ -8,6 +8,7 @@ import type {
   FlowsResponse,
   ResultsResponse,
   ValidationReportSingleResponse,
+  ValidationReportMultipleResponse,
 } from "@/types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -39,8 +40,16 @@ async function getFlowsFA() {
 }
 
 async function getValidationReportSingleFA() {
-  const response =
-    await ax.get<ValidationReportSingleResponse>("/fa/validation");
+  const response = await ax.get<ValidationReportSingleResponse>(
+    "/fa/single/validation",
+  );
+  return response.data;
+}
+
+async function getValidationReportMultipleFA() {
+  const response = await ax.get<ValidationReportMultipleResponse>(
+    "/fa/multiple/validation",
+  );
   return response.data;
 }
 
@@ -108,6 +117,14 @@ export const validationReportSingleFAQueryOptions = () =>
   queryOptions({
     queryKey: ["validation-report-single", "fa"],
     queryFn: getValidationReportSingleFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const validationReportMultipleFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["validation-report-multiple", "fa"],
+    queryFn: getValidationReportMultipleFA,
     retry: 1,
     refetchOnWindowFocus: false,
   });

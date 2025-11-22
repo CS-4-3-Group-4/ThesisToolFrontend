@@ -22,7 +22,7 @@ import type {
   SingleRunResult,
   ValidationReportSingle,
 } from "@/types";
-import { ValidationTable } from "./validation-table";
+import { ValidationTableSingle } from "./validation-single-table";
 
 interface SingleRunResultProps {
   result: SingleRunResult;
@@ -233,7 +233,7 @@ export function SingleRunResult({
 
         <FlowsTable flows={flows} algorithmName={algorithmName} />
 
-        <ValidationTable
+        <ValidationTableSingle
           validationReportSingle={validationReportSingle}
           algorithmName={algorithmName}
         />

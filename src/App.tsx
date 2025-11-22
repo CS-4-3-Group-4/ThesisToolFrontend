@@ -31,6 +31,7 @@ import {
   allocationsFAQueryOptions,
   flowsFAQueryOptions,
   validationReportSingleFAQueryOptions,
+  validationReportMultipleFAQueryOptions,
 } from "./queries/fa";
 import {
   startSingleRunEFAMutationOptions,
@@ -45,7 +46,7 @@ import {
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
 import { SingleRunResult } from "./components/results/single/single-run-result";
-import { MultipleRunResult } from "./components/results/multiple-run-result";
+import { MultipleRunResult } from "./components/results/multiple/multiple-run-result";
 import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
 
 const DEFAULT_PARAMS: SimulationParams = {
@@ -168,16 +169,30 @@ function App() {
   const {
     data: validationReportSingleDataFA,
     refetch: refetchValidationReportSingleFA,
-  } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false }); // Placeholder for validation report query
+  } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false });
 
   const refetchValidationReportSingleEFA = () => {
     console.log("Test");
   };
 
-  const validationReportData = validationReportSingleDataFA;
-  const refetchValidationReport = isFA
+  const validationReportSingleData = validationReportSingleDataFA;
+  const refetchValidationReportSingle = isFA
     ? refetchValidationReportSingleFA
     : refetchValidationReportSingleEFA;
+
+  const {
+    data: validationReportMultipleDataFA,
+    refetch: refetchValidationReportMultipleFA,
+  } = useQuery({ ...validationReportMultipleFAQueryOptions(), enabled: false });
+
+  const refetchValidationReportMultipleEFA = () => {
+    console.log("Test");
+  };
+
+  const validationReportMultipleData = validationReportMultipleDataFA;
+  const refetchValidationReportMultiple = isFA
+    ? refetchValidationReportMultipleFA
+    : refetchValidationReportMultipleEFA;
 
   // FA mutations
   const { mutate: startSingleRunFA } = useMutation({
@@ -293,12 +308,13 @@ function App() {
             refetchResults();
             refetchAllocations();
             refetchFlows();
-            refetchValidationReport();
+            refetchValidationReportSingle();
           }
 
           // Fetch results data for multiple run mode
           if (runMode === "multiple") {
             refetchResults();
+            refetchValidationReportMultiple();
           }
         } else if (statusData.error) {
           console.error("Simulation stopped with error:", statusData.error);
@@ -314,7 +330,8 @@ function App() {
     refetchResults,
     refetchAllocations,
     refetchFlows,
-    refetchValidationReport,
+    refetchValidationReportSingle,
+    refetchValidationReportMultiple,
   ]);
 
   // Update fitness from iteration history (single run only)
@@ -446,7 +463,7 @@ function App() {
       iterationsData &&
       allocationsData &&
       flowsData &&
-      validationReportData &&
+      validationReportSingleData &&
       "executionTimeMs" in resultsData
     ) {
       return (
@@ -454,7 +471,7 @@ function App() {
           result={resultsData}
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
-          validationReportSingle={validationReportData.validationReport}
+          validationReportSingle={validationReportSingleData.validationReport}
           algorithmMode={algorithmMode}
           iterations={iterationsData.iterations}
         />
@@ -462,9 +479,20 @@ function App() {
     }
 
     // Multiple run results
-    if (runMode === "multiple" && resultsData && "totalRuns" in resultsData) {
+    if (
+      runMode === "multiple" &&
+      resultsData &&
+      "totalRuns" in resultsData &&
+      validationReportMultipleData
+    ) {
       return (
-        <MultipleRunResult result={resultsData} algorithmMode={algorithmMode} />
+        <MultipleRunResult
+          result={resultsData}
+          algorithmMode={algorithmMode}
+          validationReportMultiple={
+            validationReportMultipleData.validationReport
+          }
+        />
       );
     }
 

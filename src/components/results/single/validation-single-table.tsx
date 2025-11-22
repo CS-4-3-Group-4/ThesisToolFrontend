@@ -28,7 +28,7 @@ import {
 import { json2csv } from "json-2-csv";
 import type { ValidationReportSingle } from "@/types";
 
-interface ValidationTableProps {
+interface ValidationTableSingleProps {
   validationReportSingle: ValidationReportSingle;
   algorithmName: string;
 }
@@ -48,10 +48,10 @@ type SortField =
 
 type SortDirection = "asc" | "desc" | null;
 
-export function ValidationTable({
+export function ValidationTableSingle({
   validationReportSingle,
   algorithmName,
-}: ValidationTableProps) {
+}: ValidationTableSingleProps) {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 

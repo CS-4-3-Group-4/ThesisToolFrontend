@@ -1,5 +1,8 @@
-import type { AlgorithmMode, MultipleRunResult } from "@/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import type {
+  AlgorithmMode,
+  MultipleRunResult,
+  ValidationReportMultiple,
+} from "@/types";
 import {
   Card,
   CardHeader,
@@ -8,14 +11,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -23,31 +18,27 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   TrendingUp,
   Clock,
   MemoryStick,
   Info,
   Timer,
   Download,
-  FileSpreadsheet,
-  FileJson,
 } from "lucide-react";
-import { json2csv } from "json-2-csv";
+import { IndividualRunsTable } from "./individual-runs-table";
+import { ValidationTableMultiple } from "./validation-multiple-table";
+import { ValidationBarangayTable } from "./validation-barangay-table";
 
 interface MultipleRunResultProps {
   result: MultipleRunResult;
   algorithmMode: AlgorithmMode;
+  validationReportMultiple: ValidationReportMultiple;
 }
 
 export function MultipleRunResult({
   result,
   algorithmMode,
+  validationReportMultiple,
 }: MultipleRunResultProps) {
   const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
   const algorithmFullName =
@@ -63,16 +54,6 @@ export function MultipleRunResult({
   const executionAvgSeconds = (result.executionTime.average / 1000).toFixed(3);
   const totalDurationSeconds = (result.totalDurationMs / 1000).toFixed(2);
 
-  // Flatten runs data for cleaner CSV export
-  const flattenRuns = () => {
-    return result.runs.map((run) => ({
-      runNumber: run.runNumber,
-      fitnessScore: run.fitnessMaximization,
-      executionTime: run.executionTimeMs,
-      memoryUsage: run.memoryBytes || 0,
-    }));
-  };
-
   // Export complete run data as JSON
   const exportCompleteData = () => {
     const completeData = {
@@ -83,28 +64,6 @@ export function MultipleRunResult({
     const content = JSON.stringify(completeData, null, 2);
     const filename = `${algorithmName}-multiple-runs-${Date.now()}.json`;
     downloadFile(content, filename, "application/json");
-  };
-
-  // Export individual runs
-  const exportRuns = (format: "csv" | "json") => {
-    const flattened = flattenRuns();
-    let content: string;
-    let mimeType: string;
-    let filename: string;
-
-    if (format === "csv") {
-      content = json2csv(flattened, {
-        excelBOM: true,
-      });
-      mimeType = "text/csv";
-      filename = `${algorithmName}-multiple-runs.csv`;
-    } else {
-      content = JSON.stringify(flattened, null, 2);
-      mimeType = "application/json";
-      filename = `${algorithmName}-multiple-runs.json`;
-    }
-
-    downloadFile(content, filename, mimeType);
   };
 
   // Helper function to download file
@@ -334,62 +293,21 @@ export function MultipleRunResult({
         </div>
 
         {/* Individual Runs Table */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Individual Run Details</h3>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportRuns("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportRuns("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <ScrollArea className="h-[400px] rounded-md border p-2">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Run #</TableHead>
-                  <TableHead className="text-right">Fitness Score</TableHead>
-                  <TableHead className="text-right">
-                    Execution Time (ms)
-                  </TableHead>
-                  <TableHead className="text-right">
-                    Memory Usage (bytes)
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {result.runs.map((run) => (
-                  <TableRow key={run.runNumber}>
-                    <TableCell className="font-medium">
-                      {run.runNumber}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {run.fitnessMaximization.toFixed(6)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {run.executionTimeMs.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {run.memoryBytes?.toLocaleString() || "N/A"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+        <IndividualRunsTable runs={result.runs} algorithmName={algorithmName} />
+
+        <div className="space-y-6 pt-6">
+          <h3 className="text-lg font-semibold">Validation Analysis</h3>
+
+          {/* Table 1: Overall Statistics */}
+          <ValidationTableMultiple
+            validationReportMultiple={validationReportMultiple}
+          />
+
+          {/* Table 2: Per-Barangay Statistics */}
+          <ValidationBarangayTable
+            validationReportMultiple={validationReportMultiple}
+            algorithmName={algorithmName}
+          />
         </div>
       </CardContent>
     </Card>
