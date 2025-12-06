@@ -61,13 +61,9 @@ type SortField =
   | "meanPopulationCloseness"
   | "meanSarCloseness"
   | "meanEmsCloseness"
-  | "meanHazardCloseness"
-  | "meanCombinedCloseness"
   | "cvPopulationCloseness"
   | "cvSarCloseness"
-  | "cvEmsCloseness"
-  | "cvHazardCloseness"
-  | "cvCombinedCloseness";
+  | "cvEmsCloseness";
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -234,7 +230,7 @@ export function ValidationBarangayTable({
                     </button>
                   </TableHead>
 
-                  {/* NEW: Trend column */}
+                  {/* Trend column */}
                   <TableHead className="bg-background sticky left-[200px] z-10 w-[60px] text-center">
                     Trend
                   </TableHead>
@@ -252,16 +248,6 @@ export function ValidationBarangayTable({
                   {/* EMS Closeness */}
                   <TableHead colSpan={3} className="border-l text-center">
                     EMS Closeness
-                  </TableHead>
-
-                  {/* Hazard Closeness */}
-                  <TableHead colSpan={3} className="border-l text-center">
-                    Hazard Closeness
-                  </TableHead>
-
-                  {/* Combined Closeness */}
-                  <TableHead colSpan={3} className="border-l text-center">
-                    Combined Closeness
                   </TableHead>
                 </TableRow>
                 <TableRow>
@@ -330,48 +316,6 @@ export function ValidationBarangayTable({
                       {getSortIcon("cvEmsCloseness")}
                     </button>
                   </TableHead>
-
-                  {/* Hazard subheaders */}
-                  <TableHead className="border-l text-right">
-                    <button
-                      className="hover:text-foreground ml-auto flex items-center text-xs whitespace-nowrap"
-                      onClick={() => handleSort("meanHazardCloseness")}
-                    >
-                      Mean
-                      {getSortIcon("meanHazardCloseness")}
-                    </button>
-                  </TableHead>
-                  <TableHead className="text-right text-xs">Std Dev</TableHead>
-                  <TableHead className="text-center">
-                    <button
-                      className="hover:text-foreground mx-auto flex items-center text-xs whitespace-nowrap"
-                      onClick={() => handleSort("cvHazardCloseness")}
-                    >
-                      CV
-                      {getSortIcon("cvHazardCloseness")}
-                    </button>
-                  </TableHead>
-
-                  {/* Combined subheaders */}
-                  <TableHead className="border-l text-right">
-                    <button
-                      className="hover:text-foreground ml-auto flex items-center text-xs whitespace-nowrap"
-                      onClick={() => handleSort("meanCombinedCloseness")}
-                    >
-                      Mean
-                      {getSortIcon("meanCombinedCloseness")}
-                    </button>
-                  </TableHead>
-                  <TableHead className="text-right text-xs">Std Dev</TableHead>
-                  <TableHead className="text-center">
-                    <button
-                      className="hover:text-foreground mx-auto flex items-center text-xs whitespace-nowrap"
-                      onClick={() => handleSort("cvCombinedCloseness")}
-                    >
-                      CV
-                      {getSortIcon("cvCombinedCloseness")}
-                    </button>
-                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -381,7 +325,7 @@ export function ValidationBarangayTable({
                       {stat.barangayName}
                     </TableCell>
 
-                    {/* NEW: Trend button */}
+                    {/* Trend button */}
                     <TableCell className="bg-background sticky left-[200px] z-10 text-center">
                       <Dialog>
                         <DialogTrigger asChild>
@@ -414,10 +358,10 @@ export function ValidationBarangayTable({
 
                     {/* Population Closeness */}
                     <TableCell className="text-right">
-                      {(stat.meanPopulationCloseness * 100).toFixed(2)}%
+                      {stat.meanPopulationCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-right text-xs">
-                      {(stat.stdPopulationCloseness * 100).toFixed(2)}%
+                      {stat.stdPopulationCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge
@@ -432,10 +376,10 @@ export function ValidationBarangayTable({
 
                     {/* SAR Closeness */}
                     <TableCell className="border-l text-right">
-                      {(stat.meanSarCloseness * 100).toFixed(2)}%
+                      {stat.meanSarCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-right text-xs">
-                      {(stat.stdSarCloseness * 100).toFixed(2)}%
+                      {stat.stdSarCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant={getCVBadgeVariant(stat.cvSarCloseness)}>
@@ -448,10 +392,10 @@ export function ValidationBarangayTable({
 
                     {/* EMS Closeness */}
                     <TableCell className="border-l text-right">
-                      {(stat.meanEmsCloseness * 100).toFixed(2)}%
+                      {stat.meanEmsCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-right text-xs">
-                      {(stat.stdEmsCloseness * 100).toFixed(2)}%
+                      {stat.stdEmsCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant={getCVBadgeVariant(stat.cvEmsCloseness)}>
@@ -459,42 +403,6 @@ export function ValidationBarangayTable({
                       </Badge>
                       <div className="text-muted-foreground mt-1 text-xs">
                         {(stat.cvEmsCloseness * 100).toFixed(1)}%
-                      </div>
-                    </TableCell>
-
-                    {/* Hazard Closeness */}
-                    <TableCell className="border-l text-right">
-                      {(stat.meanHazardCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-right text-xs">
-                      {(stat.stdHazardCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant={getCVBadgeVariant(stat.cvHazardCloseness)}
-                      >
-                        {getCVLabel(stat.cvHazardCloseness)}
-                      </Badge>
-                      <div className="text-muted-foreground mt-1 text-xs">
-                        {(stat.cvHazardCloseness * 100).toFixed(1)}%
-                      </div>
-                    </TableCell>
-
-                    {/* Combined Closeness */}
-                    <TableCell className="border-l text-right">
-                      {(stat.meanCombinedCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-right text-xs">
-                      {(stat.stdCombinedCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant={getCVBadgeVariant(stat.cvCombinedCloseness)}
-                      >
-                        {getCVLabel(stat.cvCombinedCloseness)}
-                      </Badge>
-                      <div className="text-muted-foreground mt-1 text-xs">
-                        {(stat.cvCombinedCloseness * 100).toFixed(1)}%
                       </div>
                     </TableCell>
                   </TableRow>

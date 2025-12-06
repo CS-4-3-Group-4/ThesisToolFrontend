@@ -146,6 +146,8 @@ export interface OverallStats {
   totalBarangays: number;
   averagePopulationScore: number;
   averagePopulationCloseness: number;
+  averageSarCloseness: number;
+  averageEmsCloseness: number;
   averageHazardCloseness: number;
   averageCombinedCloseness: number;
   qualityRating: string;

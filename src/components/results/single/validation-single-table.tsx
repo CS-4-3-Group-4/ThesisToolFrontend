@@ -42,9 +42,7 @@ type SortField =
   | "populationScore"
   | "populationCloseness"
   | "sarCloseness"
-  | "emsCloseness"
-  | "hazardCloseness"
-  | "combinedCloseness";
+  | "emsCloseness";
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -156,7 +154,7 @@ export function ValidationTableSingle({
     URL.revokeObjectURL(url);
   };
 
-  // Get quality rating badge variant (keeps badges, simple)
+  // Get quality rating badge variant
   const getQualityBadgeVariant = (rating: string) => {
     if (rating) return "default";
   };
@@ -191,7 +189,7 @@ export function ValidationTableSingle({
         <AlertDescription>
           <div className="space-y-3">
             <p className="text-sm">{validationReportSingle.interpretation}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-5">
               <div>
                 <p className="text-muted-foreground">Total Barangays</p>
                 <p className="font-semibold">
@@ -201,7 +199,9 @@ export function ValidationTableSingle({
               <div>
                 <p className="text-muted-foreground">Avg Population Score</p>
                 <p className="font-semibold">
-                  {validationReportSingle.overallStats.averagePopulationScore}
+                  {validationReportSingle.overallStats.averagePopulationScore.toFixed(
+                    2,
+                  )}
                 </p>
               </div>
               <div>
@@ -209,31 +209,25 @@ export function ValidationTableSingle({
                   Avg Population Closeness
                 </p>
                 <p className="font-semibold">
-                  {(
-                    validationReportSingle.overallStats
-                      .averagePopulationCloseness * 100
-                  ).toFixed(2)}
-                  %
+                  {validationReportSingle.overallStats.averagePopulationCloseness.toFixed(
+                    2,
+                  )}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Avg Hazard Closeness</p>
+                <p className="text-muted-foreground">Avg SAR Closeness</p>
                 <p className="font-semibold">
-                  {(
-                    validationReportSingle.overallStats.averageHazardCloseness *
-                    100
-                  ).toFixed(2)}
-                  %
+                  {validationReportSingle.overallStats.averageSarCloseness.toFixed(
+                    2,
+                  )}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Avg Combined Closeness</p>
+                <p className="text-muted-foreground">Avg EMS Closeness</p>
                 <p className="font-semibold">
-                  {(
-                    validationReportSingle.overallStats
-                      .averageCombinedCloseness * 100
-                  ).toFixed(2)}
-                  %
+                  {validationReportSingle.overallStats.averageEmsCloseness.toFixed(
+                    2,
+                  )}
                 </p>
               </div>
             </div>
@@ -350,24 +344,6 @@ export function ValidationTableSingle({
                       {getSortIcon("emsCloseness")}
                     </button>
                   </TableHead>
-                  <TableHead className="text-right">
-                    <button
-                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
-                      onClick={() => handleSort("hazardCloseness")}
-                    >
-                      Hazard Closeness
-                      {getSortIcon("hazardCloseness")}
-                    </button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <button
-                      className="hover:text-foreground ml-auto flex items-center whitespace-nowrap"
-                      onClick={() => handleSort("combinedCloseness")}
-                    >
-                      Combined Closeness
-                      {getSortIcon("combinedCloseness")}
-                    </button>
-                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -400,19 +376,13 @@ export function ValidationTableSingle({
                       {v.populationScore}
                     </TableCell>
                     <TableCell className="text-right">
-                      {(v.populationCloseness * 100).toFixed(2)}%
+                      {v.populationCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {(v.sarCloseness * 100).toFixed(2)}%
+                      {v.sarCloseness.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {(v.emsCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {(v.hazardCloseness * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {(v.combinedCloseness * 100).toFixed(2)}%
+                      {v.emsCloseness.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

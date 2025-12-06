@@ -61,22 +61,6 @@ export function ValidationTableMultiple({
       cv: validationReportMultiple.cvEmsCloseness,
     },
     {
-      metric: "Hazard Closeness",
-      mean: validationReportMultiple.meanHazardCloseness,
-      std: validationReportMultiple.stdHazardCloseness,
-      min: validationReportMultiple.minHazardCloseness,
-      max: validationReportMultiple.maxHazardCloseness,
-      cv: validationReportMultiple.cvHazardCloseness,
-    },
-    {
-      metric: "Combined Closeness",
-      mean: validationReportMultiple.meanCombinedCloseness,
-      std: validationReportMultiple.stdCombinedCloseness,
-      min: validationReportMultiple.minCombinedCloseness,
-      max: validationReportMultiple.maxCombinedCloseness,
-      cv: validationReportMultiple.cvCombinedCloseness,
-    },
-    {
       metric: "Population Score",
       mean: validationReportMultiple.meanPopulationScore,
       std: validationReportMultiple.stdPopulationScore,
@@ -115,24 +99,16 @@ export function ValidationTableMultiple({
                 <TableRow key={stat.metric}>
                   <TableCell className="font-medium">{stat.metric}</TableCell>
                   <TableCell className="text-right">
-                    {stat.isScore
-                      ? stat.mean.toFixed(2)
-                      : `${(stat.mean * 100).toFixed(2)}%`}
+                    {stat.isScore ? stat.mean.toFixed(2) : stat.mean.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-right">
-                    {stat.isScore
-                      ? stat.std.toFixed(2)
-                      : `${(stat.std * 100).toFixed(2)}%`}
+                    {stat.isScore ? stat.std.toFixed(2) : stat.std.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-right">
-                    {stat.isScore
-                      ? stat.min.toFixed(2)
-                      : `${(stat.min * 100).toFixed(2)}%`}
+                    {stat.isScore ? stat.min.toFixed(2) : stat.min.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-right">
-                    {stat.isScore
-                      ? stat.max.toFixed(2)
-                      : `${(stat.max * 100).toFixed(2)}%`}
+                    {stat.isScore ? stat.max.toFixed(2) : stat.max.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex flex-col items-center gap-1">
