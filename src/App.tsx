@@ -42,6 +42,8 @@ import {
   resultsEFAQueryOptions,
   allocationsEFAQueryOptions,
   flowsEFAQueryOptions,
+  validationReportSingleEFAQueryOptions,
+  validationReportMultipleEFAQueryOptions,
 } from "./queries/efa";
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
@@ -166,30 +168,41 @@ function App() {
   const flowsData = isFA ? flowsDataFA : flowsDataEFA;
   const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
 
+  // Validation Single Report queries
   const {
     data: validationReportSingleDataFA,
     refetch: refetchValidationReportSingleFA,
   } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false });
 
-  const refetchValidationReportSingleEFA = () => {
-    console.log("Test");
-  };
+  const {
+    data: validationReportSingleDataEFA,
+    refetch: refetchValidationReportSingleEFA,
+  } = useQuery({ ...validationReportSingleEFAQueryOptions(), enabled: false });
 
-  const validationReportSingleData = validationReportSingleDataFA;
+  const validationReportSingleData = isFA
+    ? validationReportSingleDataFA
+    : validationReportSingleDataEFA;
   const refetchValidationReportSingle = isFA
     ? refetchValidationReportSingleFA
     : refetchValidationReportSingleEFA;
 
+  // Validation Multiple Report queries
   const {
     data: validationReportMultipleDataFA,
     refetch: refetchValidationReportMultipleFA,
   } = useQuery({ ...validationReportMultipleFAQueryOptions(), enabled: false });
 
-  const refetchValidationReportMultipleEFA = () => {
-    console.log("Test");
-  };
+  const {
+    data: validationReportMultipleDataEFA,
+    refetch: refetchValidationReportMultipleEFA,
+  } = useQuery({
+    ...validationReportMultipleEFAQueryOptions(),
+    enabled: false,
+  });
 
-  const validationReportMultipleData = validationReportMultipleDataFA;
+  const validationReportMultipleData = isFA
+    ? validationReportMultipleDataFA
+    : validationReportMultipleDataEFA;
   const refetchValidationReportMultiple = isFA
     ? refetchValidationReportMultipleFA
     : refetchValidationReportMultipleEFA;
