@@ -22,14 +22,6 @@ const chartConfig = {
     label: "EMS",
     color: "var(--chart-3)",
   },
-  hazardCloseness: {
-    label: "Hazard",
-    color: "var(--chart-4)",
-  },
-  combinedCloseness: {
-    label: "Combined",
-    color: "var(--chart-5)",
-  },
 } satisfies ChartConfig;
 
 const scoreChartConfig = {
@@ -73,8 +65,6 @@ export function ChartLineBarangayTrends({
         populationCloseness: barangay.populationCloseness * 100,
         sarCloseness: barangay.sarCloseness * 100,
         emsCloseness: barangay.emsCloseness * 100,
-        hazardCloseness: barangay.hazardCloseness * 100,
-        combinedCloseness: barangay.combinedCloseness * 100,
       };
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);
@@ -213,26 +203,6 @@ export function ChartLineBarangayTrends({
                 dot={{ r: 3 }}
                 name="emsCloseness"
                 hide={activeLines.includes("emsCloseness")}
-              />
-
-              <Line
-                dataKey="hazardCloseness"
-                type="monotone"
-                stroke={chartConfig.hazardCloseness.color}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                name="hazardCloseness"
-                hide={activeLines.includes("hazardCloseness")}
-              />
-
-              <Line
-                dataKey="combinedCloseness"
-                type="monotone"
-                stroke={chartConfig.combinedCloseness.color}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                name="combinedCloseness"
-                hide={activeLines.includes("combinedCloseness")}
               />
             </LineChart>
           </ChartContainer>
