@@ -7,6 +7,8 @@ import type {
   AllocationsResponse,
   FlowsResponse,
   ResultsResponse,
+  ValidationReportSingleResponse,
+  ValidationReportMultipleResponse,
 } from "@/types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -34,6 +36,20 @@ async function getAllocationsEFA() {
 
 async function getFlowsEFA() {
   const response = await ax.get<FlowsResponse>("/efa/flows");
+  return response.data;
+}
+
+async function getValidationReportSingleEFA() {
+  const response = await ax.get<ValidationReportSingleResponse>(
+    "/efa/single/validation",
+  );
+  return response.data;
+}
+
+async function getValidationReportMultipleEFA() {
+  const response = await ax.get<ValidationReportMultipleResponse>(
+    "/efa/multiple/validation",
+  );
   return response.data;
 }
 
@@ -89,6 +105,22 @@ export const flowsEFAQueryOptions = () =>
   queryOptions({
     queryKey: ["flows", "efa"],
     queryFn: getFlowsEFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const validationReportSingleEFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["validationReportSingle", "efa"],
+    queryFn: getValidationReportSingleEFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const validationReportMultipleEFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["validationReportMultiple", "efa"],
+    queryFn: getValidationReportMultipleEFA,
     retry: 1,
     refetchOnWindowFocus: false,
   });
