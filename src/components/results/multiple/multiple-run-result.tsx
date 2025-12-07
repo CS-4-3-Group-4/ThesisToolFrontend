@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { IndividualRunsTable } from "./individual-runs-table";
 import { ValidationTableMultiple } from "./validation-multiple-table";
-import { ValidationBarangayTable } from "./validation-barangay-table";
+// import { ValidationBarangayTable } from "./validation-barangay-table";
 
 interface MultipleRunResultProps {
   result: MultipleRunResult;
@@ -304,10 +304,10 @@ export function MultipleRunResult({
           />
 
           {/* Table 2: Per-Barangay Statistics */}
-          <ValidationBarangayTable
+          {/* <ValidationBarangayTable
             validationReportMultiple={validationReportMultiple}
             algorithmName={algorithmName}
-          />
+          /> */}
         </div>
       </CardContent>
     </Card>
