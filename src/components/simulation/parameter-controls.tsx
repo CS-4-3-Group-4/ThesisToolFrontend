@@ -110,17 +110,27 @@ export function ParameterControls({
   return (
     <div className="space-y-6">
       {!ENABLE_PARAMETER_TUNING && (
-        <Card className="bg-muted/50">
-          <CardContent className="pt-1">
-            <p className="text-muted-foreground text-center text-sm">
-              For all thesis experiments and evaluation runs, hyperparameter
-              tuning has been disabled. The system now operates using a
-              finalized and locked hyperparameter configuration to ensure
-              consistency and reliability of the official results. Any
-              remaining parameter adjustment controls are intended solely
-              for demonstration or exploratory use and do not affect the
-              formal evaluation outputs.
-            </p>
+        <Card className="border-2 border-amber-500/50 bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 rounded-full bg-amber-500/10 p-2 text-amber-600 dark:text-amber-500">
+                <HelpCircle className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                  Parameters Locked for Thesis Evaluation
+                </p>
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  For all thesis experiments and evaluation runs, hyperparameter
+                  tuning has been disabled. The system now operates using a
+                  finalized and locked hyperparameter configuration to ensure
+                  consistency and reliability of the official results. Any
+                  remaining parameter adjustment controls are intended solely
+                  for demonstration or exploratory use and do not affect the
+                  formal evaluation outputs.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
