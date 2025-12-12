@@ -155,7 +155,7 @@ export function MultipleRunCompare() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `FA-vs-EFA-${metric}-comparison-${Date.now()}.csv`;
+    link.download = `FA-vs-EFA-${metric}-comparison.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
