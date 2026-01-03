@@ -230,3 +230,50 @@ export interface ValidationReportMultiple {
 export interface ValidationReportMultipleResponse {
   validationReport: ValidationReportMultiple;
 }
+
+export interface ObjectiveData {
+  objective1: Objective1;
+  objective2: Objective2;
+  objective3: Objective3;
+  objective4: Objective4;
+  objective5: Objective5;
+}
+
+export interface Objective1 {
+  Cz: number[];
+  Z: number[];
+  finalVals: number[];
+}
+
+export interface Objective2 {
+  A_runs: number[][][];
+  r_runs: number[][];
+  P_runs: number[];
+  Z_runs: number[];
+  C_runs: number[];
+  finalVals: number[];
+}
+
+export interface Objective3 {
+  totalsPerI_runs: number[][];
+  mean_runs: number[];
+  std_runs: number[];
+  eps_runs: number[];
+  finalVals: number[];
+}
+
+export interface Objective4 {
+  A_runs: number[][][];
+  D_runs: number[][][];
+  Z_runs: number[];
+  C_runs: number[];
+  finalVals: number[];
+}
+
+export interface Objective5 {
+  AiTotals_runs: number[][];
+  DPi_runs: number[][];
+  Z_runs: number[];
+  eps_runs: number[];
+  finalVals: number[];
+}
