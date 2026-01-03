@@ -9,6 +9,7 @@ import type {
   ResultsResponse,
   ValidationReportSingleResponse,
   ValidationReportMultipleResponse,
+  ObjectiveData,
 } from "@/types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -36,6 +37,11 @@ async function getAllocationsFA() {
 
 async function getFlowsFA() {
   const response = await ax.get<FlowsResponse>("/fa/flows");
+  return response.data;
+}
+
+async function getObjectivesFA() {
+  const response = await ax.get<ObjectiveData>("/fa/objectives");
   return response.data;
 }
 
@@ -109,6 +115,14 @@ export const flowsFAQueryOptions = () =>
   queryOptions({
     queryKey: ["flows", "fa"],
     queryFn: getFlowsFA,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export const objectivesFAQueryOptions = () =>
+  queryOptions({
+    queryKey: ["objectives", "fa"],
+    queryFn: getObjectivesFA,
     retry: 1,
     refetchOnWindowFocus: false,
   });
