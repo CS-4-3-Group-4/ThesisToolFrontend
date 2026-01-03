@@ -32,6 +32,7 @@ import {
   flowsFAQueryOptions,
   validationReportSingleFAQueryOptions,
   validationReportMultipleFAQueryOptions,
+  objectivesFAQueryOptions,
 } from "./queries/fa";
 import {
   startSingleRunEFAMutationOptions,
@@ -44,6 +45,7 @@ import {
   flowsEFAQueryOptions,
   validationReportSingleEFAQueryOptions,
   validationReportMultipleEFAQueryOptions,
+  objectivesEFAQueryOptions,
 } from "./queries/efa";
 import { toast } from "sonner";
 import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitness-iteration";
@@ -164,6 +166,20 @@ function App() {
     ...flowsEFAQueryOptions(),
     enabled: false,
   });
+
+  // Objectives queries
+  const { data: objectivesDataFA, refetch: refetchObjectivesFA } = useQuery({
+    ...objectivesFAQueryOptions(),
+    enabled: false,
+  });
+
+  const { data: objectivesDataEFA, refetch: refetchObjectivesEFA } = useQuery({
+    ...objectivesEFAQueryOptions(),
+    enabled: false,
+  });
+
+  const objectivesData = isFA ? objectivesDataFA : objectivesDataEFA;
+  const refetchObjectives = isFA ? refetchObjectivesFA : refetchObjectivesEFA;
 
   const flowsData = isFA ? flowsDataFA : flowsDataEFA;
   const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
@@ -322,12 +338,14 @@ function App() {
             refetchAllocations();
             refetchFlows();
             refetchValidationReportSingle();
+            refetchObjectives(); // ADDED
           }
 
           // Fetch results data for multiple run mode
           if (runMode === "multiple") {
             refetchResults();
             refetchValidationReportMultiple();
+            refetchObjectives(); // ADDED
           }
         } else if (statusData.error) {
           console.error("Simulation stopped with error:", statusData.error);
@@ -345,6 +363,7 @@ function App() {
     refetchFlows,
     refetchValidationReportSingle,
     refetchValidationReportMultiple,
+    refetchObjectives, // ADDED
   ]);
 
   // Update fitness from iteration history (single run only)
@@ -477,6 +496,7 @@ function App() {
       allocationsData &&
       flowsData &&
       validationReportSingleData &&
+      objectivesData && // ADDED
       "executionTimeMs" in resultsData
     ) {
       return (
@@ -485,6 +505,7 @@ function App() {
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
           validationReportSingle={validationReportSingleData.validationReport}
+          objectives={objectivesData} // ADDED
           algorithmMode={algorithmMode}
           iterations={iterationsData.iterations}
         />
@@ -496,7 +517,8 @@ function App() {
       runMode === "multiple" &&
       resultsData &&
       "totalRuns" in resultsData &&
-      validationReportMultipleData
+      validationReportMultipleData &&
+      objectivesData // ADDED
     ) {
       return (
         <MultipleRunResult
@@ -505,6 +527,7 @@ function App() {
           validationReportMultiple={
             validationReportMultipleData.validationReport
           }
+          objectives={objectivesData} // ADDED
         />
       );
     }

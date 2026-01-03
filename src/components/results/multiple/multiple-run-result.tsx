@@ -1,6 +1,7 @@
 import type {
   AlgorithmMode,
   MultipleRunResult,
+  ObjectiveData,
   ValidationReportMultiple,
 } from "@/types";
 import {
@@ -27,17 +28,20 @@ import {
 } from "lucide-react";
 import { IndividualRunsTable } from "./individual-runs-table";
 import { ValidationTableMultiple } from "./validation-multiple-table";
+import { ObjectivesDisplay } from "../objectives-display";
 // import { ValidationBarangayTable } from "./validation-barangay-table";
 
 interface MultipleRunResultProps {
   result: MultipleRunResult;
   algorithmMode: AlgorithmMode;
+  objectives: ObjectiveData;
   validationReportMultiple: ValidationReportMultiple;
 }
 
 export function MultipleRunResult({
   result,
   algorithmMode,
+  objectives,
   validationReportMultiple,
 }: MultipleRunResultProps) {
   const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
@@ -294,6 +298,11 @@ export function MultipleRunResult({
 
         {/* Individual Runs Table */}
         <IndividualRunsTable runs={result.runs} algorithmName={algorithmName} />
+
+        <ObjectivesDisplay
+          objectives={objectives}
+          algorithmName={algorithmName}
+        />
 
         <div className="space-y-6 pt-6">
           <h3 className="text-lg font-semibold">Validation Analysis</h3>

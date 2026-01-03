@@ -19,16 +19,19 @@ import type {
   AlgorithmMode,
   Allocation,
   Flow,
+  ObjectiveData,
   SingleRunResult,
   ValidationReportSingle,
 } from "@/types";
 import { ValidationTableSingle } from "./validation-single-table";
+import { ObjectivesDisplay } from "../objectives-display";
 
 interface SingleRunResultProps {
   result: SingleRunResult;
   allocations: Allocation[];
   flows: Flow[];
   validationReportSingle: ValidationReportSingle;
+  objectives: ObjectiveData;
   algorithmMode: AlgorithmMode;
   iterations: Array<{ iteration: number; fitness: number }>;
 }
@@ -38,6 +41,7 @@ export function SingleRunResult({
   allocations,
   flows,
   validationReportSingle,
+  objectives,
   algorithmMode,
   iterations,
 }: SingleRunResultProps) {
@@ -232,6 +236,11 @@ export function SingleRunResult({
         />
 
         <FlowsTable flows={flows} algorithmName={algorithmName} />
+
+        <ObjectivesDisplay
+          objectives={objectives}
+          algorithmName={algorithmName}
+        />
 
         <ValidationTableSingle
           validationReportSingle={validationReportSingle}
