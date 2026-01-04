@@ -76,26 +76,52 @@ export function ObjectivesDisplay({
       [],
     ];
 
-    // Add A_runs matrices
-    objectives.objective2.A_runs.forEach((matrix, runIdx) => {
-      obj2Data.push([`A_runs - Run ${runIdx + 1}`]);
-      obj2Data.push([]);
-      matrix.forEach((row) => {
-        obj2Data.push(row);
-      });
-      obj2Data.push([]);
-    });
+    // Add A_runs matrices horizontally
+    obj2Data.push(["A_runs"]);
+    const numRuns2A = objectives.objective2.A_runs.length;
+    const headerRow2A = [""];
+    for (let i = 0; i < numRuns2A; i++) {
+      headerRow2A.push(`Run ${i + 1}`, "");
+    }
+    obj2Data.push(headerRow2A);
 
-    // Add r_runs data
+    const maxRows2A = Math.max(
+      ...objectives.objective2.A_runs.map((m) => m.length),
+    );
+    for (let rowIdx = 0; rowIdx < maxRows2A; rowIdx++) {
+      const row: unknown[] = [""];
+      for (let runIdx = 0; runIdx < numRuns2A; runIdx++) {
+        const matrix = objectives.objective2.A_runs[runIdx];
+        if (rowIdx < matrix.length) {
+          row.push(...matrix[rowIdx]);
+        } else {
+          row.push("", "");
+        }
+      }
+      obj2Data.push(row);
+    }
+
+    // Add r_runs horizontally
     obj2Data.push([]);
-    objectives.objective2.r_runs.forEach((values, runIdx) => {
-      obj2Data.push([`r_runs - Run ${runIdx + 1}`]);
-      obj2Data.push(["Value"]);
-      values.forEach((val) => {
-        obj2Data.push([val]);
-      });
-      obj2Data.push([]);
-    });
+    obj2Data.push(["r_runs"]);
+    const numRuns2R = objectives.objective2.r_runs.length;
+    const headerRow2R = [""];
+    for (let i = 0; i < numRuns2R; i++) {
+      headerRow2R.push(`Run ${i + 1}`);
+    }
+    obj2Data.push(headerRow2R);
+
+    const maxRows2R = Math.max(
+      ...objectives.objective2.r_runs.map((r) => r.length),
+    );
+    for (let rowIdx = 0; rowIdx < maxRows2R; rowIdx++) {
+      const row: unknown[] = [""];
+      for (let runIdx = 0; runIdx < numRuns2R; runIdx++) {
+        const values = objectives.objective2.r_runs[runIdx];
+        row.push(rowIdx < values.length ? values[rowIdx] : "");
+      }
+      obj2Data.push(row);
+    }
 
     const ws2 = XLSX.utils.aoa_to_sheet(obj2Data);
     XLSX.utils.book_append_sheet(workbook, ws2, "Objective 2");
@@ -116,15 +142,26 @@ export function ObjectivesDisplay({
       [],
     ];
 
-    // Add totalsPerI_runs
-    objectives.objective3.totalsPerI_runs.forEach((run, runIdx) => {
-      obj3Data.push([`Totals Per I - Run ${runIdx + 1}`]);
-      obj3Data.push(["Index", "Value"]);
-      run.forEach((val, idx) => {
-        obj3Data.push([idx, val]);
-      });
-      obj3Data.push([]);
-    });
+    // Add totalsPerI_runs horizontally
+    obj3Data.push(["Totals Per I"]);
+    const numRuns3 = objectives.objective3.totalsPerI_runs.length;
+    const headerRow3 = ["Index"];
+    for (let i = 0; i < numRuns3; i++) {
+      headerRow3.push(`Run ${i + 1}`);
+    }
+    obj3Data.push(headerRow3);
+
+    const maxLen3 = Math.max(
+      ...objectives.objective3.totalsPerI_runs.map((r) => r.length),
+    );
+    for (let idx = 0; idx < maxLen3; idx++) {
+      const row: unknown[] = [idx];
+      for (let runIdx = 0; runIdx < numRuns3; runIdx++) {
+        const values = objectives.objective3.totalsPerI_runs[runIdx];
+        row.push(idx < values.length ? values[idx] : "");
+      }
+      obj3Data.push(row);
+    }
 
     const ws3 = XLSX.utils.aoa_to_sheet(obj3Data);
     XLSX.utils.book_append_sheet(workbook, ws3, "Objective 3");
@@ -144,26 +181,56 @@ export function ObjectivesDisplay({
       [],
     ];
 
-    // Add A_runs matrices
-    objectives.objective4.A_runs.forEach((matrix, runIdx) => {
-      obj4Data.push([`A_runs - Run ${runIdx + 1}`]);
-      obj4Data.push([]);
-      matrix.forEach((row) => {
-        obj4Data.push(row);
-      });
-      obj4Data.push([]);
-    });
+    // Add A_runs matrices horizontally
+    obj4Data.push(["A_runs"]);
+    const numRuns4A = objectives.objective4.A_runs.length;
+    const headerRow4A = [""];
+    for (let i = 0; i < numRuns4A; i++) {
+      headerRow4A.push(`Run ${i + 1}`, "");
+    }
+    obj4Data.push(headerRow4A);
 
-    // Add D_runs matrices
+    const maxRows4A = Math.max(
+      ...objectives.objective4.A_runs.map((m) => m.length),
+    );
+    for (let rowIdx = 0; rowIdx < maxRows4A; rowIdx++) {
+      const row: unknown[] = [""];
+      for (let runIdx = 0; runIdx < numRuns4A; runIdx++) {
+        const matrix = objectives.objective4.A_runs[runIdx];
+        if (rowIdx < matrix.length) {
+          row.push(...matrix[rowIdx]);
+        } else {
+          row.push("", "");
+        }
+      }
+      obj4Data.push(row);
+    }
+
+    // Add D_runs matrices horizontally
     obj4Data.push([]);
-    objectives.objective4.D_runs.forEach((matrix, runIdx) => {
-      obj4Data.push([`D_runs - Run ${runIdx + 1}`]);
-      obj4Data.push([]);
-      matrix.forEach((row) => {
-        obj4Data.push(row);
-      });
-      obj4Data.push([]);
-    });
+    obj4Data.push(["D_runs"]);
+    const numRuns4D = objectives.objective4.D_runs.length;
+    const headerRow4D = [""];
+    for (let i = 0; i < numRuns4D; i++) {
+      headerRow4D.push(`Run ${i + 1}`, "");
+    }
+    obj4Data.push(headerRow4D);
+
+    const maxRows4D = Math.max(
+      ...objectives.objective4.D_runs.map((m) => m.length),
+    );
+    for (let rowIdx = 0; rowIdx < maxRows4D; rowIdx++) {
+      const row: unknown[] = [""];
+      for (let runIdx = 0; runIdx < numRuns4D; runIdx++) {
+        const matrix = objectives.objective4.D_runs[runIdx];
+        if (rowIdx < matrix.length) {
+          row.push(...matrix[rowIdx]);
+        } else {
+          row.push("", "");
+        }
+      }
+      obj4Data.push(row);
+    }
 
     const ws4 = XLSX.utils.aoa_to_sheet(obj4Data);
     XLSX.utils.book_append_sheet(workbook, ws4, "Objective 4");
@@ -183,26 +250,48 @@ export function ObjectivesDisplay({
       [],
     ];
 
-    // Add AiTotals_runs
-    objectives.objective5.AiTotals_runs.forEach((run, runIdx) => {
-      obj5Data.push([`Ai Totals - Run ${runIdx + 1}`]);
-      obj5Data.push(["Index", "Value"]);
-      run.forEach((val, idx) => {
-        obj5Data.push([idx, val]);
-      });
-      obj5Data.push([]);
-    });
+    // Add AiTotals_runs horizontally
+    obj5Data.push(["Ai Totals"]);
+    const numRuns5A = objectives.objective5.AiTotals_runs.length;
+    const headerRow5A = ["Index"];
+    for (let i = 0; i < numRuns5A; i++) {
+      headerRow5A.push(`Run ${i + 1}`);
+    }
+    obj5Data.push(headerRow5A);
 
-    // Add DPi_runs
+    const maxLen5A = Math.max(
+      ...objectives.objective5.AiTotals_runs.map((r) => r.length),
+    );
+    for (let idx = 0; idx < maxLen5A; idx++) {
+      const row: unknown[] = [idx];
+      for (let runIdx = 0; runIdx < numRuns5A; runIdx++) {
+        const values = objectives.objective5.AiTotals_runs[runIdx];
+        row.push(idx < values.length ? values[idx] : "");
+      }
+      obj5Data.push(row);
+    }
+
+    // Add DPi_runs horizontally
     obj5Data.push([]);
-    objectives.objective5.DPi_runs.forEach((run, runIdx) => {
-      obj5Data.push([`DPi - Run ${runIdx + 1}`]);
-      obj5Data.push(["Index", "Value"]);
-      run.forEach((val, idx) => {
-        obj5Data.push([idx, val]);
-      });
-      obj5Data.push([]);
-    });
+    obj5Data.push(["DPi"]);
+    const numRuns5D = objectives.objective5.DPi_runs.length;
+    const headerRow5D = ["Index"];
+    for (let i = 0; i < numRuns5D; i++) {
+      headerRow5D.push(`Run ${i + 1}`);
+    }
+    obj5Data.push(headerRow5D);
+
+    const maxLen5D = Math.max(
+      ...objectives.objective5.DPi_runs.map((r) => r.length),
+    );
+    for (let idx = 0; idx < maxLen5D; idx++) {
+      const row: unknown[] = [idx];
+      for (let runIdx = 0; runIdx < numRuns5D; runIdx++) {
+        const values = objectives.objective5.DPi_runs[runIdx];
+        row.push(idx < values.length ? values[idx] : "");
+      }
+      obj5Data.push(row);
+    }
 
     const ws5 = XLSX.utils.aoa_to_sheet(obj5Data);
     XLSX.utils.book_append_sheet(workbook, ws5, "Objective 5");
@@ -262,7 +351,9 @@ export function ObjectivesDisplay({
             onClick={() => toggleObjective(1)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Objective 1</CardTitle>
+              <CardTitle className="text-base">
+                Objective 1 - Coverage Score
+              </CardTitle>
               {expandedObjectives.has(1) ? (
                 <ChevronDown className="h-5 w-5" />
               ) : (
@@ -311,7 +402,9 @@ export function ObjectivesDisplay({
             onClick={() => toggleObjective(2)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Objective 2</CardTitle>
+              <CardTitle className="text-base">
+                Objective 2 - Prioritization Fulfillment
+              </CardTitle>
               {expandedObjectives.has(2) ? (
                 <ChevronDown className="h-5 w-5" />
               ) : (
@@ -424,7 +517,9 @@ export function ObjectivesDisplay({
             onClick={() => toggleObjective(3)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Objective 3</CardTitle>
+              <CardTitle className="text-base">
+                Objective 3 - Distribution Imbalance Penalty
+              </CardTitle>
               {expandedObjectives.has(3) ? (
                 <ChevronDown className="h-5 w-5" />
               ) : (
@@ -503,7 +598,9 @@ export function ObjectivesDisplay({
             onClick={() => toggleObjective(4)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Objective 4</CardTitle>
+              <CardTitle className="text-base">
+                Objective 4 - Demand Satisfaction
+              </CardTitle>
               {expandedObjectives.has(4) ? (
                 <ChevronDown className="h-5 w-5" />
               ) : (
@@ -617,7 +714,9 @@ export function ObjectivesDisplay({
             onClick={() => toggleObjective(5)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Objective 5</CardTitle>
+              <CardTitle className="text-base">
+                Objective 5 - Displaced Population Index
+              </CardTitle>
               {expandedObjectives.has(5) ? (
                 <ChevronDown className="h-5 w-5" />
               ) : (
