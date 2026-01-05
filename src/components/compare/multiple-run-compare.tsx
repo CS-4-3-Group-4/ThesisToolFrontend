@@ -25,7 +25,7 @@ import {
   Download,
   FileSpreadsheet,
 } from "lucide-react";
-import type { MultipleRunResult } from "@/types";
+import { type ObjectiveData, type MultipleRunResult } from "@/types";
 import {
   ChartLineCompareFitnessRun,
   ChartLineCompareExecutionTimeRun,
@@ -64,7 +64,151 @@ export function MultipleRunCompare() {
   );
   const [EFAMultipleFile, setEFAMultipleFile] =
     useState<MultipleRunFile | null>(null);
+  const [faObjectives, setFaObjectives] = useState<ObjectiveData | null>(null);
+  const [efaObjectives, setEfaObjectives] = useState<ObjectiveData | null>(
+    null,
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Handle objectives file drop
+  const handleObjectivesFileDrop = async (
+    files: File[],
+    setFile: (data: ObjectiveData) => void,
+  ) => {
+    const file = files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+
+      if (
+        !json.objective1 ||
+        !json.objective2 ||
+        !json.objective3 ||
+        !json.objective4 ||
+        !json.objective5
+      ) {
+        setErrorMessage(
+          "Invalid objectives file. Must contain all 5 objectives.",
+        );
+        return;
+      }
+
+      setErrorMessage(null);
+      setFile(json);
+    } catch (error) {
+      console.error("Invalid JSON file", error);
+      setErrorMessage("Invalid JSON file format.");
+    }
+  };
+
+  // Export objectives comparison CSV
+  const exportObjectivesCSV = () => {
+    if (!faObjectives || !efaObjectives) return;
+
+    const numRuns = Math.max(
+      faObjectives.objective1.finalVals.length,
+      efaObjectives.objective1.finalVals.length,
+    );
+
+    const headers = [
+      "Run",
+      "Objective1_FA",
+      "Objective1_EFA",
+      "Objective2_FA",
+      "Objective2_EFA",
+      "Objective3_FA",
+      "Objective3_EFA",
+      "Objective4_FA",
+      "Objective4_EFA",
+      "Objective5_FA",
+      "Objective5_EFA",
+    ];
+
+    const formatValue = (val: number | "" | null | undefined) => {
+      if (val === "" || val === null || val === undefined) return "";
+      return Number(val).toFixed(6);
+    };
+
+    const rows = [];
+    for (let i = 0; i < numRuns; i++) {
+      rows.push([
+        i + 1,
+        formatValue(faObjectives.objective1.finalVals[i]),
+        formatValue(efaObjectives.objective1.finalVals[i]),
+        formatValue(faObjectives.objective2.finalVals[i]),
+        formatValue(efaObjectives.objective2.finalVals[i]),
+        formatValue(faObjectives.objective3.finalVals[i]),
+        formatValue(efaObjectives.objective3.finalVals[i]),
+        formatValue(faObjectives.objective4.finalVals[i]),
+        formatValue(efaObjectives.objective4.finalVals[i]),
+        formatValue(faObjectives.objective5.finalVals[i]),
+        formatValue(efaObjectives.objective5.finalVals[i]),
+      ]);
+    }
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `FA-vs-EFA-objectives-comparison-${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const objectiveHeaderBgMap = {
+    objective1: {
+      fa: "bg-blue-100 dark:bg-blue-900/50",
+      efa: "bg-blue-200 dark:bg-blue-800/60",
+    },
+    objective2: {
+      fa: "bg-purple-100 dark:bg-purple-900/50",
+      efa: "bg-purple-200 dark:bg-purple-800/60",
+    },
+    objective3: {
+      fa: "bg-orange-100 dark:bg-orange-900/50",
+      efa: "bg-orange-200 dark:bg-orange-800/60",
+    },
+    objective4: {
+      fa: "bg-teal-100 dark:bg-teal-900/50",
+      efa: "bg-teal-200 dark:bg-teal-800/60",
+    },
+    objective5: {
+      fa: "bg-pink-100 dark:bg-pink-900/50",
+      efa: "bg-pink-200 dark:bg-pink-800/60",
+    },
+  };
+
+  const objectiveBgMap: { [key: string]: { fa: string; efa: string } } = {
+    objective1: {
+      fa: "bg-blue-50 dark:bg-blue-950/30",
+      efa: "bg-blue-100 dark:bg-blue-900/40",
+    },
+    objective2: {
+      fa: "bg-purple-50 dark:bg-purple-950/30",
+      efa: "bg-purple-100 dark:bg-purple-900/40",
+    },
+    objective3: {
+      fa: "bg-orange-50 dark:bg-orange-950/30",
+      efa: "bg-orange-100 dark:bg-orange-900/40",
+    },
+    objective4: {
+      fa: "bg-teal-50 dark:bg-teal-950/30",
+      efa: "bg-teal-100 dark:bg-teal-900/40",
+    },
+    objective5: {
+      fa: "bg-pink-50 dark:bg-pink-950/30",
+      efa: "bg-pink-100 dark:bg-pink-900/40",
+    },
+  };
 
   const handleMultipleFileDrop = async (
     files: File[],
@@ -618,6 +762,285 @@ export function MultipleRunCompare() {
         <div className="bg-destructive/10 text-destructive flex items-center justify-center gap-2 rounded-md p-3 text-sm font-medium">
           <AlertTriangle className="h-4 w-4" />
           {errorMessage}
+        </div>
+      )}
+
+      {/* Objectives Comparison Section */}
+      {bothMultipleUploaded && (
+        <div className="mx-24 mt-6 space-y-6 border-t pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Objectives Comparison</h2>
+              <p className="text-muted-foreground text-sm">
+                Upload objectives JSON files to compare final values
+              </p>
+            </div>
+            {faObjectives && efaObjectives && (
+              <Button variant="outline" onClick={exportObjectivesCSV}>
+                <Download className="mr-2 h-4 w-4" />
+                Export Objectives CSV
+              </Button>
+            )}
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="hover:border-primary border-2 border-dashed">
+              <CardHeader>
+                <CardTitle className="text-base">FA Objectives</CardTitle>
+                <CardDescription>
+                  Upload FA objectives JSON file
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Dropzone
+                  accept={{ "application/json": [] }}
+                  maxFiles={1}
+                  maxSize={1024 * 1024 * 10}
+                  onDrop={(files) =>
+                    handleObjectivesFileDrop(files, setFaObjectives)
+                  }
+                  src={
+                    faObjectives
+                      ? [new File([], "FA-objectives.json")]
+                      : undefined
+                  }
+                >
+                  {!faObjectives ? (
+                    <DropzoneEmptyState>
+                      <div className="flex flex-col items-center py-4">
+                        <UploadIcon className="text-muted-foreground mb-2 h-8 w-8" />
+                        <p className="text-sm font-medium">
+                          Upload FA Objectives
+                        </p>
+                      </div>
+                    </DropzoneEmptyState>
+                  ) : (
+                    <DropzoneContent>
+                      <div className="flex flex-col items-center py-4">
+                        <CheckCircle2 className="mb-2 h-8 w-8 text-green-500" />
+                        <p className="text-sm font-medium">
+                          FA Objectives Loaded
+                        </p>
+                      </div>
+                    </DropzoneContent>
+                  )}
+                </Dropzone>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary border-2 border-dashed">
+              <CardHeader>
+                <CardTitle className="text-base">EFA Objectives</CardTitle>
+                <CardDescription>
+                  Upload EFA objectives JSON file
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Dropzone
+                  accept={{ "application/json": [] }}
+                  maxFiles={1}
+                  maxSize={1024 * 1024 * 10}
+                  onDrop={(files) =>
+                    handleObjectivesFileDrop(files, setEfaObjectives)
+                  }
+                  src={
+                    efaObjectives
+                      ? [new File([], "EFA-objectives.json")]
+                      : undefined
+                  }
+                >
+                  {!efaObjectives ? (
+                    <DropzoneEmptyState>
+                      <div className="flex flex-col items-center py-4">
+                        <UploadIcon className="text-muted-foreground mb-2 h-8 w-8" />
+                        <p className="text-sm font-medium">
+                          Upload EFA Objectives
+                        </p>
+                      </div>
+                    </DropzoneEmptyState>
+                  ) : (
+                    <DropzoneContent>
+                      <div className="flex flex-col items-center py-4">
+                        <CheckCircle2 className="mb-2 h-8 w-8 text-green-500" />
+                        <p className="text-sm font-medium">
+                          EFA Objectives Loaded
+                        </p>
+                      </div>
+                    </DropzoneContent>
+                  )}
+                </Dropzone>
+              </CardContent>
+            </Card>
+          </div>
+
+          {faObjectives && efaObjectives && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Objectives Comparison Table</CardTitle>
+                <CardDescription>
+                  Final values for all objectives across all runs
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="bg-background sticky left-0 p-2 text-left font-semibold">
+                          Run
+                        </th>
+
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective1.fa}`}
+                        >
+                          Obj1 FA
+                        </th>
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective1.efa}`}
+                        >
+                          Obj1 EFA
+                        </th>
+
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective2.fa}`}
+                        >
+                          Obj2 FA
+                        </th>
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective2.efa}`}
+                        >
+                          Obj2 EFA
+                        </th>
+
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective3.fa}`}
+                        >
+                          Obj3 FA
+                        </th>
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective3.efa}`}
+                        >
+                          Obj3 EFA
+                        </th>
+
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective4.fa}`}
+                        >
+                          Obj4 FA
+                        </th>
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective4.efa}`}
+                        >
+                          Obj4 EFA
+                        </th>
+
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective5.fa}`}
+                        >
+                          Obj5 FA
+                        </th>
+                        <th
+                          className={`p-2 text-right ${objectiveHeaderBgMap.objective5.efa}`}
+                        >
+                          Obj5 EFA
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {Array.from({
+                        length: Math.max(
+                          faObjectives.objective1.finalVals.length,
+                          efaObjectives.objective1.finalVals.length,
+                        ),
+                      }).map((_, idx) => (
+                        <tr key={idx} className="hover:bg-muted/40 border-b">
+                          <td className="bg-background sticky left-0 p-2 font-medium">
+                            {idx + 1}
+                          </td>
+
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective1.fa}`}
+                          >
+                            {faObjectives.objective1.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective1.efa}`}
+                          >
+                            {efaObjectives.objective1.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective2.fa}`}
+                          >
+                            {faObjectives.objective2.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective2.efa}`}
+                          >
+                            {efaObjectives.objective2.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective3.fa}`}
+                          >
+                            {faObjectives.objective3.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective3.efa}`}
+                          >
+                            {efaObjectives.objective3.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective4.fa}`}
+                          >
+                            {faObjectives.objective4.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective4.efa}`}
+                          >
+                            {efaObjectives.objective4.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective5.fa}`}
+                          >
+                            {faObjectives.objective5.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                          <td
+                            className={`p-2 text-right font-mono ${objectiveBgMap.objective5.efa}`}
+                          >
+                            {efaObjectives.objective5.finalVals[idx]?.toFixed(
+                              6,
+                            ) || "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>

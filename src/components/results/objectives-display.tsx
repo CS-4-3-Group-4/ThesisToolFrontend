@@ -34,6 +34,43 @@ export function ObjectivesDisplay({
     setExpandedObjectives(newExpanded);
   };
 
+  // Export final values as CSV
+  const exportCSV = () => {
+    const numRuns = objectives.objective1.finalVals.length;
+
+    // Create header row
+    const headers = [
+      "Run",
+      "Objective 1",
+      "Objective 2",
+      "Objective 3",
+      "Objective 4",
+      "Objective 5",
+    ];
+
+    // Create data rows
+    const rows = [];
+    for (let i = 0; i < numRuns; i++) {
+      rows.push([
+        i + 1,
+        objectives.objective1.finalVals[i],
+        objectives.objective2.finalVals[i],
+        objectives.objective3.finalVals[i],
+        objectives.objective4.finalVals[i],
+        objectives.objective5.finalVals[i],
+      ]);
+    }
+
+    // Convert to CSV format
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+
+    const filename = `${algorithmName}-final-values-${Date.now()}.csv`;
+    downloadFile(csvContent, filename, "text/csv");
+  };
+
   // Export complete objectives data as JSON
   const exportJSON = () => {
     const content = JSON.stringify(objectives, null, 2);
@@ -339,6 +376,10 @@ export function ObjectivesDisplay({
             <Button variant="outline" size="sm" onClick={exportJSON}>
               <Download className="mr-2 h-4 w-4" />
               Export JSON
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Export Final Values to CSV
             </Button>
           </div>
         </div>
