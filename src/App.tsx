@@ -12,6 +12,7 @@ import {
 import { Card, CardContent } from "./components/ui/card";
 import {
   Activity,
+  BadgeCheck,
   GitCompareArrows,
   Settings2,
   TrendingUp,
@@ -54,6 +55,7 @@ import { MultipleRunResult } from "./components/results/multiple/multiple-run-re
 import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
 import { ScenarioSelector } from "./components/simulation/scenario-selector";
 import { isAxiosError } from "axios";
+import { SolutionQualityDisplay } from "./components/quality/solution-quality-display";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -579,6 +581,10 @@ function App() {
               <GitCompareArrows className="mr-2 h-4 w-4" />
               Compare
             </TabsTrigger>
+            <TabsTrigger value="quality">
+              <BadgeCheck className="mr-2 h-4 w-4" />
+              Solution Quality
+            </TabsTrigger>
           </TabsList>
 
           <TabsContents>
@@ -645,6 +651,10 @@ function App() {
 
             <TabsContent value="compare" className="space-y-6">
               <AlgorithmCompare />
+            </TabsContent>
+
+            <TabsContent value="quality" className="space-y-6">
+              <SolutionQualityDisplay />
             </TabsContent>
           </TabsContents>
         </Tabs>
