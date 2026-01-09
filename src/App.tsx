@@ -52,6 +52,8 @@ import { ChartLineFitnessIteration } from "./components/charts/chart-line-fitnes
 import { SingleRunResult } from "./components/results/single/single-run-result";
 import { MultipleRunResult } from "./components/results/multiple/multiple-run-result";
 import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
+import { ScenarioSelector } from "./components/simulation/scenario-selector";
+import { isAxiosError } from "axios";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -61,6 +63,7 @@ const DEFAULT_PARAMS: SimulationParams = {
   beta0: 1.0,
   gamma: 1.0,
   betaMin: 0.2, // Default for EFA
+  scenario: 1, // Default scenario
 };
 
 const REFETCH_INTERVAL_MS = 200;
@@ -72,7 +75,7 @@ function App() {
   const [runMode, setRunMode] = useState<RunMode>("single");
   const [progress, setProgress] = useState<number | null>(null);
 
-  const [numRuns, setNumRuns] = useState(30);
+  const totalRuns = 30;
   const [currentRun, setCurrentRun] = useState(0);
 
   const [isRunning, setIsRunning] = useState(false);
@@ -234,9 +237,15 @@ function App() {
       setIsStarting(false);
       toast.success("Single run started (Original FA)");
     },
-    onError: () => {
+    onError: (error) => {
       setIsStarting(false);
       setIsRunning(false);
+      console.log(error);
+      if (isAxiosError(error)) {
+        toast.error(
+          error.response?.data.details || "Failed to start single run",
+        );
+      }
     },
   });
 
@@ -248,7 +257,7 @@ function App() {
     onSuccess: () => {
       setIsRunning(true);
       setIsStarting(false);
-      toast.success(`Started ${numRuns} runs (Original FA)`);
+      toast.success("Started all 30 scenarios (Original FA)");
     },
     onError: () => {
       setIsStarting(false);
@@ -289,7 +298,7 @@ function App() {
     onSuccess: () => {
       setIsRunning(true);
       setIsStarting(false);
-      toast.success(`Started ${numRuns} runs (Extended FA)`);
+      toast.success("Started all 30 scenarios (Extended FA)");
     },
     onError: () => {
       setIsStarting(false);
@@ -394,6 +403,10 @@ function App() {
     apiStatus = "connected";
   }
 
+  function handleScenarioChange(scenario: number) {
+    setParams((prev) => ({ ...prev, scenario }));
+  }
+
   function handleResetParams() {
     setParams(DEFAULT_PARAMS);
     toast.success("Parameters reset to defaults");
@@ -434,10 +447,10 @@ function App() {
     } else if (runMode === "multiple") {
       switch (algorithmMode) {
         case "original":
-          startMultipleRunFA({ params, numRuns });
+          startMultipleRunFA(params);
           break;
         case "extended":
-          startMultipleRunEFA({ params, numRuns });
+          startMultipleRunEFA(params);
           break;
       }
     }
@@ -455,7 +468,6 @@ function App() {
     setIsStarting(false);
     setCurrentIteration(0);
     setCurrentRun(0);
-    setNumRuns(30);
     setProgress(null);
     setBestFitnessOriginal(null);
     setBestFitnessExtended(null);
@@ -474,7 +486,7 @@ function App() {
                 <p className="text-muted-foreground text-sm">
                   {runMode === "single"
                     ? `Running iteration ${currentIteration} of ${params.generations}`
-                    : `Running ${currentRun} of ${numRuns} simulations`}
+                    : `Running ${currentRun} of ${totalRuns} simulations`}
                 </p>
                 {progress !== null && (
                   <p className="text-muted-foreground text-sm">
@@ -579,10 +591,15 @@ function App() {
 
               <RunModeSelector
                 runMode={runMode}
-                numRuns={numRuns}
                 isRunning={isRunning || isStarting}
                 onRunModeChange={setRunMode}
-                onNumRunsChange={setNumRuns}
+              />
+
+              <ScenarioSelector
+                scenario={params.scenario || 1}
+                onScenarioChange={handleScenarioChange}
+                isRunning={isRunning || isStarting}
+                runMode={runMode}
               />
 
               <div className="grid gap-6 lg:grid-cols-3">
@@ -591,7 +608,7 @@ function App() {
                   progress={progress}
                   currentIteration={currentIteration}
                   totalGenerations={params.generations}
-                  totalRuns={numRuns}
+                  totalRuns={totalRuns}
                   currentRun={currentRun}
                   bestFitnessOriginal={bestFitnessOriginal}
                   bestFitnessExtended={bestFitnessExtended}

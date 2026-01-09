@@ -6,6 +6,7 @@ export interface SimulationParams {
   alphaFinal: number;
   generations: number;
   betaMin?: number; // Optional - only used by EFA
+  scenario?: number; // for single run (1-30, default: 1)
 }
 
 export type AlgorithmMode = "original" | "extended";

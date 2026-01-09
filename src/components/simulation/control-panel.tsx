@@ -76,7 +76,7 @@ export function ControlPanel({
         <div className="space-y-3 pt-4">
           <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-3">
             <span className="text-sm font-medium">
-              {runMode === "single" ? "Current Iteration" : "Current Run"}
+              {runMode === "single" ? "Current Iteration" : "Current Scenario"}
             </span>
             {runMode === "single" && (
               <Badge variant="outline" className="font-mono">

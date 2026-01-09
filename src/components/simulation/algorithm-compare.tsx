@@ -22,7 +22,7 @@ export function AlgorithmCompare() {
         <CardHeader>
           <CardTitle>Comparison Mode</CardTitle>
           <CardDescription>
-            Choose whether to compare single runs or multiple runs
+            Choose whether to compare single scenario or multiple scenarios
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -31,8 +31,8 @@ export function AlgorithmCompare() {
             onValueChange={(v) => setCompareMode(v as CompareMode)}
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="single">Single Run</TabsTrigger>
-              <TabsTrigger value="multiple">Multiple Runs</TabsTrigger>
+              <TabsTrigger value="single">Single Scenario</TabsTrigger>
+              <TabsTrigger value="multiple">Multiple Scenarios</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardContent>

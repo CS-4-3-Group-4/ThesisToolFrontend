@@ -92,7 +92,7 @@ export function MultipleRunResult({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{algorithmFullName} - Multiple Runs Results</CardTitle>
+            <CardTitle>{algorithmFullName} - Multiple Scenarios Results</CardTitle>
             <CardDescription>
               Statistical analysis of {result.totalRuns} runs
             </CardDescription>

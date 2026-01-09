@@ -65,14 +65,14 @@ async function postStopEFA() {
 }
 
 async function postSingleRunEFA(params: SimulationParams) {
-  await ax.post("/efa/single/run", params);
+  const { scenario = 1, ...efaParams } = params;
+  await ax.post(`/efa/single/run?scenario=${scenario}`, efaParams);
 }
 
-async function postMultipleRunEFA(payload: {
-  params: SimulationParams;
-  numRuns: number;
-}) {
-  await ax.post(`/efa/multiple/run?runs=${payload.numRuns}`, payload.params);
+async function postMultipleRunEFA(params: SimulationParams) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { scenario: _, ...efaParams } = params;
+  await ax.post("/efa/multiple/run", efaParams);
 }
 
 export const iterationsEFAQueryOptions = () =>

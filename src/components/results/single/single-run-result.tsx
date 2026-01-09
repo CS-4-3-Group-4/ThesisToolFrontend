@@ -111,7 +111,7 @@ export function SingleRunResult({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{algorithmFullName} - Single Run Results</CardTitle>
+            <CardTitle>{algorithmFullName} - Single Scenario Results</CardTitle>
             <CardDescription>
               Performance metrics and resource allocation
             </CardDescription>
