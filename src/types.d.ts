@@ -277,3 +277,44 @@ export interface Objective5 {
   eps_runs: number[];
   finalVals: number[];
 }
+
+export interface QualityComparison {
+  scenarioPercentageChanges: number[];
+  scenarioComparisons: ScenarioComparison[];
+  meanPercentageChange: number;
+  minPercentageChange: number;
+  maxPercentageChange: number;
+  faMeanSQ: number;
+  efaMeanSQ: number;
+  improvedScenarios: number;
+  unchangedScenarios: number;
+  degradedScenarios: number;
+}
+
+export interface ScenarioComparison {
+  scenarioNumber: number;
+  faSolutionQuality: number;
+  efaSolutionQuality: number;
+  percentageChange: number;
+  barangayComparisons: BarangayComparison[];
+}
+
+export interface BarangayComparison {
+  barangayId: string;
+  barangayName: string;
+  barangayFAScore: BarangayScore;
+  barangayEFAScore: BarangayScore;
+  percentageChange: number;
+  degradation: boolean;
+  noChange: boolean;
+  improvement: boolean;
+}
+
+export interface BarangayScore {
+  barangayId: string;
+  barangayName: string;
+  allocated: number;
+  required: number;
+  score: number;
+  hazardLevel: string;
+}
