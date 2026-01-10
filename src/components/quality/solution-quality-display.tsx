@@ -158,6 +158,14 @@ export function SolutionQualityDisplay() {
     setExpandedScenarios(newExpanded);
   };
 
+  const exportDataToJson = () => {
+    downloadFile(
+      JSON.stringify(qualityComparison, null, 2),
+      "solution_quality_comparison.json",
+      "application/json",
+    );
+  };
+
   // Export functions
   const exportTable1 = (format: "csv" | "json") => {
     const data = {
@@ -290,6 +298,15 @@ export function SolutionQualityDisplay() {
             className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
           />
           {isFetching ? "Refreshing..." : "Refresh Data"}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => exportDataToJson()}
+          disabled={isFetching}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Export Data
         </Button>
       </div>
 
