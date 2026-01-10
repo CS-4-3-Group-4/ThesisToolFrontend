@@ -315,7 +315,7 @@ export interface BarangayScore {
   barangayId: string;
   barangayName: string;
   allocated: number;
-  required: number;
-  score: number;
+  ideal: number;
+  solutionQuality: number;
   hazardLevel: string;
 }

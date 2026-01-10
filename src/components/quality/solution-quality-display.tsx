@@ -18,23 +18,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   ChevronDown,
   ChevronRight,
   Download,
-  FileSpreadsheet,
-  FileJson,
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { json2csv } from "json-2-csv";
 import { qualityComparisonQueryOptions } from "@/queries/quality";
 
 export function SolutionQualityDisplay() {
@@ -51,13 +42,13 @@ export function SolutionQualityDisplay() {
     new Set(),
   );
 
-  function formatNumber(num: number, toFixed: number) {
-    if (Number.isInteger(num)) {
-      return num.toString(); // leave integers as-is
-    } else {
-      return num.toFixed(toFixed); // toFixed decimal places for non-integers
-    }
-  }
+  // function formatNumber(num: number, toFixed: number) {
+  //   if (Number.isInteger(num)) {
+  //     return num.toString(); // leave integers as-is
+  //   } else {
+  //     return num.toFixed(toFixed); // toFixed decimal places for non-integers
+  //   }
+  // }
 
   // Handle loading state
   if (isLoading) {
@@ -166,83 +157,6 @@ export function SolutionQualityDisplay() {
     );
   };
 
-  // Export functions
-  const exportTable1 = (format: "csv" | "json") => {
-    const data = {
-      faMeanSQ: qualityComparison.faMeanSQ,
-      efaMeanSQ: qualityComparison.efaMeanSQ,
-      meanPercentageChange: qualityComparison.meanPercentageChange,
-      minPercentageChange: qualityComparison.minPercentageChange,
-      maxPercentageChange: qualityComparison.maxPercentageChange,
-      improvedScenarios: qualityComparison.improvedScenarios,
-      unchangedScenarios: qualityComparison.unchangedScenarios,
-      degradedScenarios: qualityComparison.degradedScenarios,
-    };
-
-    if (format === "csv") {
-      const csv = json2csv([data], { excelBOM: true });
-      downloadFile(csv, "overall-scenario-performance.csv", "text/csv");
-    } else {
-      downloadFile(
-        JSON.stringify(data, null, 2),
-        "overall-scenario-performance.json",
-        "application/json",
-      );
-    }
-  };
-
-  const exportTable2 = (format: "csv" | "json") => {
-    const data = qualityComparison.scenarioComparisons.map((sc) => ({
-      scenarioNumber: sc.scenarioNumber,
-      faSolutionQuality: sc.faSolutionQuality,
-      efaSolutionQuality: sc.efaSolutionQuality,
-      percentageChange: sc.percentageChange,
-    }));
-
-    if (format === "csv") {
-      const csv = json2csv(data, { excelBOM: true });
-      downloadFile(csv, "scenario-level-quality.csv", "text/csv");
-    } else {
-      downloadFile(
-        JSON.stringify(data, null, 2),
-        "scenario-level-quality.json",
-        "application/json",
-      );
-    }
-  };
-
-  const exportTable3 = (format: "csv" | "json") => {
-    const data: object[] = [];
-    qualityComparison.scenarioComparisons.forEach((sc) => {
-      sc.barangayComparisons.forEach((bc) => {
-        data.push({
-          scenarioNumber: sc.scenarioNumber,
-          barangayId: bc.barangayId,
-          barangayName: bc.barangayName,
-          hazardLevel: bc.barangayFAScore.hazardLevel,
-          faAllocated: bc.barangayFAScore.allocated,
-          faRequired: bc.barangayFAScore.required,
-          efaAllocated: bc.barangayEFAScore.allocated,
-          efaRequired: bc.barangayEFAScore.required,
-          faScore: bc.barangayFAScore.score,
-          efaScore: bc.barangayEFAScore.score,
-          percentageChange: bc.percentageChange,
-        });
-      });
-    });
-
-    if (format === "csv") {
-      const csv = json2csv(data, { excelBOM: true });
-      downloadFile(csv, "barangay-level-comparison.csv", "text/csv");
-    } else {
-      downloadFile(
-        JSON.stringify(data, null, 2),
-        "barangay-level-comparison.json",
-        "application/json",
-      );
-    }
-  };
-
   const downloadFile = (
     content: string,
     filename: string,
@@ -321,24 +235,6 @@ export function SolutionQualityDisplay() {
                 {qualityComparison.scenarioComparisons.length} scenarios
               </CardDescription>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportTable1("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportTable1("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
@@ -349,7 +245,7 @@ export function SolutionQualityDisplay() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {formatNumber(qualityComparison.faMeanSQ, 6)}
+                  {qualityComparison.faMeanSQ}
                 </div>
               </CardContent>
             </Card>
@@ -360,7 +256,7 @@ export function SolutionQualityDisplay() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {formatNumber(qualityComparison.efaMeanSQ, 6)}
+                  {qualityComparison.efaMeanSQ}
                 </div>
               </CardContent>
             </Card>
@@ -374,7 +270,7 @@ export function SolutionQualityDisplay() {
                   className={`text-2xl font-bold ${getChangeColor(qualityComparison.meanPercentageChange)}`}
                 >
                   {qualityComparison.meanPercentageChange >= 0 ? "+" : ""}
-                  {qualityComparison.meanPercentageChange.toFixed(2)}%
+                  {qualityComparison.meanPercentageChange}%
                 </div>
               </CardContent>
             </Card>
@@ -390,7 +286,7 @@ export function SolutionQualityDisplay() {
                     <span
                       className={`font-semibold ${getChangeColor(qualityComparison.minPercentageChange)}`}
                     >
-                      {qualityComparison.minPercentageChange.toFixed(2)}%
+                      {qualityComparison.minPercentageChange}%
                     </span>
                   </div>
                   <div className="flex gap-2 text-sm">
@@ -398,7 +294,7 @@ export function SolutionQualityDisplay() {
                     <span
                       className={`font-semibold ${getChangeColor(qualityComparison.maxPercentageChange)}`}
                     >
-                      {qualityComparison.maxPercentageChange.toFixed(2)}%
+                      {qualityComparison.maxPercentageChange}%
                     </span>
                   </div>
                 </div>
@@ -440,24 +336,6 @@ export function SolutionQualityDisplay() {
                 Performance metrics for each individual scenario
               </CardDescription>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportTable2("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportTable2("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
@@ -486,16 +364,16 @@ export function SolutionQualityDisplay() {
                         {sc.scenarioNumber}
                       </TableCell>
                       <TableCell className="text-right font-mono">
-                        {formatNumber(sc.faSolutionQuality, 6)}
+                        {sc.faSolutionQuality}
                       </TableCell>
                       <TableCell className="text-right font-mono">
-                        {formatNumber(sc.efaSolutionQuality, 6)}
+                        {sc.efaSolutionQuality}
                       </TableCell>
                       <TableCell
                         className={`text-right font-mono ${getChangeColor(sc.percentageChange)}`}
                       >
                         {sc.percentageChange >= 0 ? "+" : ""}
-                        {sc.percentageChange.toFixed(2)}%
+                        {sc.percentageChange}%
                       </TableCell>
                       <TableCell className="text-center">
                         {getChangeBadge(sc.percentageChange)}
@@ -522,24 +400,6 @@ export function SolutionQualityDisplay() {
                 Detailed breakdown by scenario and barangay
               </CardDescription>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportTable3("csv")}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportTable3("json")}>
-                  <FileJson className="mr-2 h-4 w-4" />
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -559,7 +419,7 @@ export function SolutionQualityDisplay() {
                       className={`font-mono text-sm ${getChangeColor(sc.percentageChange)}`}
                     >
                       {sc.percentageChange >= 0 ? "+" : ""}
-                      {sc.percentageChange.toFixed(2)}%
+                      {sc.percentageChange}%
                     </span>
                   </div>
                   {expandedScenarios.has(sc.scenarioNumber) ? (
@@ -585,22 +445,22 @@ export function SolutionQualityDisplay() {
                               FA Allocated
                             </TableHead>
                             <TableHead className="text-right">
-                              FA Required
+                              FA Ideal
                             </TableHead>
                             <TableHead className="text-right">
                               EFA Allocated
                             </TableHead>
                             <TableHead className="text-right">
-                              EFA Required
+                              EFA Ideal
                             </TableHead>
                             <TableHead className="text-right">
-                              FA Score
+                              FA Solution Quality
                             </TableHead>
                             <TableHead className="text-right">
-                              EFA Score
+                              EFA Solution Quality
                             </TableHead>
                             <TableHead className="text-right">
-                              Change (%)
+                              Percentage Change (%)
                             </TableHead>
                           </TableRow>
                         </TableHeader>
@@ -633,25 +493,25 @@ export function SolutionQualityDisplay() {
                                 {bc.barangayFAScore.allocated}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {bc.barangayFAScore.required}
+                                {bc.barangayFAScore.ideal}
                               </TableCell>
                               <TableCell className="text-right font-mono">
                                 {bc.barangayEFAScore.allocated}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {bc.barangayEFAScore.required}
+                                {bc.barangayEFAScore.ideal}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {formatNumber(bc.barangayFAScore.score, 6)}
+                                {bc.barangayFAScore.solutionQuality}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {formatNumber(bc.barangayEFAScore.score, 6)}
+                                {bc.barangayEFAScore.solutionQuality}
                               </TableCell>
                               <TableCell
                                 className={`text-right font-mono ${getChangeColor(bc.percentageChange)}`}
                               >
                                 {bc.percentageChange >= 0 ? "+" : ""}
-                                {formatNumber(bc.percentageChange, 2)}%
+                                {bc.percentageChange}%
                               </TableCell>
                             </TableRow>
                           ))}
