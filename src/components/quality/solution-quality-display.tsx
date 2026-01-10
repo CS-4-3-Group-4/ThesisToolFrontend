@@ -589,7 +589,14 @@ export function SolutionQualityDisplay() {
                         </TableHeader>
                         <TableBody>
                           {sc.barangayComparisons.map((bc) => (
-                            <TableRow key={bc.barangayId}>
+                            <TableRow
+                              key={bc.barangayId}
+                              className={
+                                bc.barangayFAScore.hazardLevel === "None"
+                                  ? "opacity-25"
+                                  : ""
+                              }
+                            >
                               <TableCell className="font-mono text-xs">
                                 {bc.barangayId}
                               </TableCell>
@@ -618,10 +625,10 @@ export function SolutionQualityDisplay() {
                                 {bc.barangayEFAScore.required}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {formatNumber(bc.barangayEFAScore.score, 6)}
+                                {formatNumber(bc.barangayFAScore.score, 6)}
                               </TableCell>
                               <TableCell className="text-right font-mono">
-                                {formatNumber(bc.barangayFAScore.score, 6)}
+                                {formatNumber(bc.barangayEFAScore.score, 6)}
                               </TableCell>
                               <TableCell
                                 className={`text-right font-mono ${getChangeColor(bc.percentageChange)}`}
