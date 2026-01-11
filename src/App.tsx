@@ -56,6 +56,7 @@ import { AlgorithmCompare } from "./components/simulation/algorithm-compare";
 import { ScenarioSelector } from "./components/simulation/scenario-selector";
 import { isAxiosError } from "axios";
 import { SolutionQualityDisplay } from "./components/quality/solution-quality-display";
+import { isMultipleRunAllocations, isMultipleRunFlows } from "./lib/utils";
 
 const DEFAULT_PARAMS: SimulationParams = {
   generations: 300,
@@ -357,6 +358,8 @@ function App() {
             refetchResults();
             // refetchValidationReportMultiple();
             refetchObjectives(); // ADDED
+            refetchAllocations();
+            refetchFlows();
           }
         } else if (statusData.error) {
           console.error("Simulation stopped with error:", statusData.error);
@@ -513,23 +516,29 @@ function App() {
       objectivesData && // ADDED
       "executionTimeMs" in resultsData
     ) {
-      return (
-        <SingleRunResult
-          result={resultsData}
-          allocations={allocationsData.allocations}
-          flows={flowsData.flows}
-          // validationReportSingle={validationReportSingleData.validationReport}
-          objectives={objectivesData} // ADDED
-          algorithmMode={algorithmMode}
-          iterations={iterationsData.iterations}
-        />
-      );
+      const isSingleAllocations = !isMultipleRunAllocations(allocationsData);
+      const isSingleFlows = !isMultipleRunFlows(flowsData);
+
+      if (isSingleAllocations && isSingleFlows) {
+        return (
+          <SingleRunResult
+            result={resultsData}
+            allocations={allocationsData.allocations}
+            flows={flowsData.flows}
+            objectives={objectivesData}
+            algorithmMode={algorithmMode}
+            iterations={iterationsData.iterations}
+          />
+        );
+      }
     }
 
     // Multiple run results
     if (
       runMode === "multiple" &&
       resultsData &&
+      flowsData &&
+      allocationsData &&
       "totalRuns" in resultsData &&
       // validationReportMultipleData &&
       objectivesData // ADDED
@@ -538,6 +547,8 @@ function App() {
         <MultipleRunResult
           result={resultsData}
           algorithmMode={algorithmMode}
+          allocations={allocationsData}
+          flows={flowsData}
           // validationReportMultiple={
           //   validationReportMultipleData.validationReport
           // }

@@ -1,5 +1,7 @@
 import type {
   AlgorithmMode,
+  AllocationsResponse,
+  FlowsResponse,
   MultipleRunResult,
   ObjectiveData,
   // ValidationReportMultiple,
@@ -29,6 +31,9 @@ import {
 import { IndividualRunsTable } from "./individual-runs-table";
 // import { ValidationTableMultiple } from "./validation-multiple-table";
 import { ObjectivesDisplay } from "../objectives-display";
+import { isMultipleRunAllocations, isMultipleRunFlows } from "@/lib/utils";
+import { MultipleAllocationsDisplay } from "./allocations-multiple-display";
+import { MultipleFlowsDisplay } from "./flows-multiple-display";
 // import { ValidationBarangayTable } from "./validation-barangay-table";
 
 interface MultipleRunResultProps {
@@ -36,12 +41,16 @@ interface MultipleRunResultProps {
   algorithmMode: AlgorithmMode;
   objectives: ObjectiveData;
   // validationReportMultiple: ValidationReportMultiple;
+  allocations?: AllocationsResponse;
+  flows?: FlowsResponse;
 }
 
 export function MultipleRunResult({
   result,
   algorithmMode,
   objectives,
+  allocations,
+  flows,
   // validationReportMultiple,
 }: MultipleRunResultProps) {
   const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
@@ -306,16 +315,32 @@ export function MultipleRunResult({
           algorithmName={algorithmName}
         />
 
-        {/* <div className="space-y-6 pt-6"> */}
-          {/* <h3 className="text-lg font-semibold">Validation Analysis</h3> */}
+        {/* Add allocations display for multiple runs */}
+        {allocations && isMultipleRunAllocations(allocations) && (
+          <MultipleAllocationsDisplay
+            allocations={allocations.allocations}
+            algorithmName={algorithmName}
+          />
+        )}
 
-          {/* Table 1: Overall Statistics */}
-          {/* <ValidationTableMultiple
+        {/* Add flows display for multiple runs */}
+        {flows && isMultipleRunFlows(flows) && (
+          <MultipleFlowsDisplay
+            flows={flows.flows}
+            algorithmName={algorithmName}
+          />
+        )}
+
+        {/* <div className="space-y-6 pt-6"> */}
+        {/* <h3 className="text-lg font-semibold">Validation Analysis</h3> */}
+
+        {/* Table 1: Overall Statistics */}
+        {/* <ValidationTableMultiple
             validationReportMultiple={validationReportMultiple}
           /> */}
 
-          {/* Table 2: Per-Barangay Statistics */}
-          {/* <ValidationBarangayTable
+        {/* Table 2: Per-Barangay Statistics */}
+        {/* <ValidationBarangayTable
             validationReportMultiple={validationReportMultiple}
             algorithmName={algorithmName}
           /> */}
