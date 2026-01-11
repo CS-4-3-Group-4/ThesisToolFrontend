@@ -47,14 +47,27 @@ export type IterationsResponse = {
   }>;
 };
 
-export interface AllocationsResponse {
-  allocations: Allocation[];
-}
+export type FlowsResponse = SingleRunFlowsResponse | MultipleRunFlowsResponse;
 
-export interface FlowsResponse {
+export interface SingleRunFlowsResponse {
   flows: Flow[];
 }
 
+export interface MultipleRunFlowsResponse {
+  flows: Flow[][];
+}
+
+export type AllocationsResponse =
+  | SingleRunAllocationsResponse
+  | MultipleRunAllocationsResponse;
+
+export interface SingleRunAllocationsResponse {
+  allocations: Allocation[];
+}
+
+export interface MultipleRunAllocationsResponse {
+  allocations: Allocation[][];
+}
 export type ResultsResponse = SingleRunResult | MultipleRunResult;
 
 export interface Allocation {
