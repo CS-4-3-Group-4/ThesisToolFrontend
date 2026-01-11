@@ -31,8 +31,8 @@ import {
   resultsFAQueryOptions,
   allocationsFAQueryOptions,
   flowsFAQueryOptions,
-  validationReportSingleFAQueryOptions,
-  validationReportMultipleFAQueryOptions,
+  // validationReportSingleFAQueryOptions,
+  // validationReportMultipleFAQueryOptions,
   objectivesFAQueryOptions,
 } from "./queries/fa";
 import {
@@ -44,8 +44,8 @@ import {
   resultsEFAQueryOptions,
   allocationsEFAQueryOptions,
   flowsEFAQueryOptions,
-  validationReportSingleEFAQueryOptions,
-  validationReportMultipleEFAQueryOptions,
+  // validationReportSingleEFAQueryOptions,
+  // validationReportMultipleEFAQueryOptions,
   objectivesEFAQueryOptions,
 } from "./queries/efa";
 import { toast } from "sonner";
@@ -190,43 +190,43 @@ function App() {
   const refetchFlows = isFA ? refetchFlowsFA : refetchFlowsEFA;
 
   // Validation Single Report queries
-  const {
-    data: validationReportSingleDataFA,
-    refetch: refetchValidationReportSingleFA,
-  } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false });
+  // const {
+  //   data: validationReportSingleDataFA,
+  //   refetch: refetchValidationReportSingleFA,
+  // } = useQuery({ ...validationReportSingleFAQueryOptions(), enabled: false });
 
-  const {
-    data: validationReportSingleDataEFA,
-    refetch: refetchValidationReportSingleEFA,
-  } = useQuery({ ...validationReportSingleEFAQueryOptions(), enabled: false });
+  // const {
+  //   data: validationReportSingleDataEFA,
+  //   refetch: refetchValidationReportSingleEFA,
+  // } = useQuery({ ...validationReportSingleEFAQueryOptions(), enabled: false });
 
-  const validationReportSingleData = isFA
-    ? validationReportSingleDataFA
-    : validationReportSingleDataEFA;
-  const refetchValidationReportSingle = isFA
-    ? refetchValidationReportSingleFA
-    : refetchValidationReportSingleEFA;
+  // const validationReportSingleData = isFA
+  //   ? validationReportSingleDataFA
+  //   : validationReportSingleDataEFA;
+  // const refetchValidationReportSingle = isFA
+  //   ? refetchValidationReportSingleFA
+  //   : refetchValidationReportSingleEFA;
 
-  // Validation Multiple Report queries
-  const {
-    data: validationReportMultipleDataFA,
-    refetch: refetchValidationReportMultipleFA,
-  } = useQuery({ ...validationReportMultipleFAQueryOptions(), enabled: false });
+  // // Validation Multiple Report queries
+  // const {
+  //   data: validationReportMultipleDataFA,
+  //   refetch: refetchValidationReportMultipleFA,
+  // } = useQuery({ ...validationReportMultipleFAQueryOptions(), enabled: false });
 
-  const {
-    data: validationReportMultipleDataEFA,
-    refetch: refetchValidationReportMultipleEFA,
-  } = useQuery({
-    ...validationReportMultipleEFAQueryOptions(),
-    enabled: false,
-  });
+  // const {
+  //   data: validationReportMultipleDataEFA,
+  //   refetch: refetchValidationReportMultipleEFA,
+  // } = useQuery({
+  //   ...validationReportMultipleEFAQueryOptions(),
+  //   enabled: false,
+  // });
 
-  const validationReportMultipleData = isFA
-    ? validationReportMultipleDataFA
-    : validationReportMultipleDataEFA;
-  const refetchValidationReportMultiple = isFA
-    ? refetchValidationReportMultipleFA
-    : refetchValidationReportMultipleEFA;
+  // const validationReportMultipleData = isFA
+  //   ? validationReportMultipleDataFA
+  //   : validationReportMultipleDataEFA;
+  // const refetchValidationReportMultiple = isFA
+  //   ? refetchValidationReportMultipleFA
+  //   : refetchValidationReportMultipleEFA;
 
   // FA mutations
   const { mutate: startSingleRunFA } = useMutation({
@@ -348,14 +348,14 @@ function App() {
             refetchResults();
             refetchAllocations();
             refetchFlows();
-            refetchValidationReportSingle();
+            // refetchValidationReportSingle();
             refetchObjectives(); // ADDED
           }
 
           // Fetch results data for multiple run mode
           if (runMode === "multiple") {
             refetchResults();
-            refetchValidationReportMultiple();
+            // refetchValidationReportMultiple();
             refetchObjectives(); // ADDED
           }
         } else if (statusData.error) {
@@ -372,8 +372,8 @@ function App() {
     refetchResults,
     refetchAllocations,
     refetchFlows,
-    refetchValidationReportSingle,
-    refetchValidationReportMultiple,
+    // refetchValidationReportSingle,
+    // refetchValidationReportMultiple,
     refetchObjectives, // ADDED
   ]);
 
@@ -509,7 +509,7 @@ function App() {
       iterationsData &&
       allocationsData &&
       flowsData &&
-      validationReportSingleData &&
+      // validationReportSingleData &&
       objectivesData && // ADDED
       "executionTimeMs" in resultsData
     ) {
@@ -518,7 +518,7 @@ function App() {
           result={resultsData}
           allocations={allocationsData.allocations}
           flows={flowsData.flows}
-          validationReportSingle={validationReportSingleData.validationReport}
+          // validationReportSingle={validationReportSingleData.validationReport}
           objectives={objectivesData} // ADDED
           algorithmMode={algorithmMode}
           iterations={iterationsData.iterations}
@@ -531,16 +531,16 @@ function App() {
       runMode === "multiple" &&
       resultsData &&
       "totalRuns" in resultsData &&
-      validationReportMultipleData &&
+      // validationReportMultipleData &&
       objectivesData // ADDED
     ) {
       return (
         <MultipleRunResult
           result={resultsData}
           algorithmMode={algorithmMode}
-          validationReportMultiple={
-            validationReportMultipleData.validationReport
-          }
+          // validationReportMultiple={
+          //   validationReportMultipleData.validationReport
+          // }
           objectives={objectivesData} // ADDED
         />
       );

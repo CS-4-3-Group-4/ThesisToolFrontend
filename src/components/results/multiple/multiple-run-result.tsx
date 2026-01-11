@@ -2,7 +2,7 @@ import type {
   AlgorithmMode,
   MultipleRunResult,
   ObjectiveData,
-  ValidationReportMultiple,
+  // ValidationReportMultiple,
 } from "@/types";
 import {
   Card,
@@ -27,7 +27,7 @@ import {
   Download,
 } from "lucide-react";
 import { IndividualRunsTable } from "./individual-runs-table";
-import { ValidationTableMultiple } from "./validation-multiple-table";
+// import { ValidationTableMultiple } from "./validation-multiple-table";
 import { ObjectivesDisplay } from "../objectives-display";
 // import { ValidationBarangayTable } from "./validation-barangay-table";
 
@@ -35,14 +35,14 @@ interface MultipleRunResultProps {
   result: MultipleRunResult;
   algorithmMode: AlgorithmMode;
   objectives: ObjectiveData;
-  validationReportMultiple: ValidationReportMultiple;
+  // validationReportMultiple: ValidationReportMultiple;
 }
 
 export function MultipleRunResult({
   result,
   algorithmMode,
   objectives,
-  validationReportMultiple,
+  // validationReportMultiple,
 }: MultipleRunResultProps) {
   const algorithmName = algorithmMode === "original" ? "FA" : "EFA";
   const algorithmFullName =
@@ -92,7 +92,9 @@ export function MultipleRunResult({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{algorithmFullName} - Multiple Scenarios Results</CardTitle>
+            <CardTitle>
+              {algorithmFullName} - Multiple Scenarios Results
+            </CardTitle>
             <CardDescription>
               Statistical analysis of {result.totalRuns} runs
             </CardDescription>
@@ -304,20 +306,20 @@ export function MultipleRunResult({
           algorithmName={algorithmName}
         />
 
-        <div className="space-y-6 pt-6">
-          <h3 className="text-lg font-semibold">Validation Analysis</h3>
+        {/* <div className="space-y-6 pt-6"> */}
+          {/* <h3 className="text-lg font-semibold">Validation Analysis</h3> */}
 
           {/* Table 1: Overall Statistics */}
-          <ValidationTableMultiple
+          {/* <ValidationTableMultiple
             validationReportMultiple={validationReportMultiple}
-          />
+          /> */}
 
           {/* Table 2: Per-Barangay Statistics */}
           {/* <ValidationBarangayTable
             validationReportMultiple={validationReportMultiple}
             algorithmName={algorithmName}
           /> */}
-        </div>
+        {/* </div> */}
       </CardContent>
     </Card>
   );
